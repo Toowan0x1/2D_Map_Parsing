@@ -133,14 +133,14 @@ n = 15
 texture/npn0.xpm
 */
 
-char    *fill_map(int map_fd, char *map_content, int index) {
-    char *line;
-    int i = 0;
-    while ((line = get_next_line(map_fd)) != NULL && i < index)
-        i++;
-    map_content = malloc(sizeof(char *) * ft_strlen(line));
-    return (ft_strdup(line));
-}
+// char    *fill_map(int map_fd, char *map_content, int index) {
+//     char *line;
+//     int i = 0;
+//     while ((line = get_next_line(map_fd)) != NULL && i < index)
+//         i++;
+//     map_content = malloc(sizeof(char *) * ft_strlen(line));
+//     return (ft_strdup(line));
+// }
 
 int	calc_lines(int map_fd)
 {
@@ -184,7 +184,6 @@ void get_file_extension(char *str) {
     }
 }
 
-//void    fetch_textures(char **map, char direction) {
 void    check_num_of_texture(char **map) {
     int i = 0;
     int total_textures = 0;
@@ -202,10 +201,18 @@ void    check_num_of_texture(char **map) {
         else if (map[i][0] == 'E' && map[i][1] == 'A' && map[i][2] == ' ') {
             total_textures++;
         }
+        //
+        else if (map[i][0] == 'C' && map[i][1] == ' ')
+        {
+            total_textures++;
+        }
+        else if (map[i][0] == 'F' && map[i][1] == ' ')
+        {
+            total_textures++;
+        }
         i++;
     }
-    //printf("total ==> %d \n", total_textures);
-    if (total_textures != 4)
+    if (total_textures != 6)
     {
         write(2, "invalid number of textures.\n", 28);
         exit(1);
@@ -214,6 +221,17 @@ void    check_num_of_texture(char **map) {
 
 typedef struct s_map_info
 {
+    int     color_c;
+    int     color_f;
+
+    int     start_index;
+    int     end_index;
+    int     num_of_lines;
+    int     len_of_line;
+
+    char    **map_data;
+    char    *ceiling;
+    char    *floor;
     char    *no_texture;
     char    *so_texture;
     char    *we_texture;
@@ -222,9 +240,8 @@ typedef struct s_map_info
 
 void    check_texture_valid(char *texture)
 {
-    if (access(texture, F_OK) == 0) {
-        //printf("File '%s' exists.\n", texture);
-    } else {
+    if (access(texture, F_OK) != 0)
+    {
         printf("File not found.\n"); // write error
         exit(1);
     }
@@ -237,7 +254,6 @@ void    check_xpm_extension(char *texture)
     while (texture[i])
         i++;
     int index_to_start = i - 4;
-    //printf("texture start at ==> %s", texture + index_to_start);
     if (ft_strcmp(texture + index_to_start, ".xpm") == 0)
     {
         //is_valid(texture)
@@ -257,77 +273,96 @@ void    check_textures(char *texture)
 void remove_trailing_newline(char *str) {
     int len = ft_strlen(str);
     if (len > 0 && str[len - 1] == '\n') {
-        str[len - 1] = '\0';  // Replace newline with null terminator
+        // Replace newline with null terminator:
+        str[len - 1] = '\0';
     }
 }
 
-
-//void    fetch_textures(char **map, char direction) {
-void    fetch_textures(char **map, t_map_info *map_data) {
+void    set_textures_values(char **map, t_map_info *map_data) {
     int i = 0;
     while (map[i])
     {
         if (map[i][0] == 'N' && map[i][1] == 'O' && map[i][2] == ' ') {
             char **texture_split = ft_split(map[i], ' ');
             map_data->no_texture = texture_split[1];
-            //printf("%s", map_data->no_texture);
+            remove_trailing_newline(map_data->no_texture);
             if (texture_split[2])
             {
                 write(2, "invalid given texture.\n", 23);
                 exit(1);
             }
-            remove_trailing_newline(map_data->no_texture);
-            //printf("=== remove newline ===> %s \n", map_data->no_texture);
             check_textures(map_data->no_texture);
             // if not xpm and if not valid
         }
         else if (map[i][0] == 'S' && map[i][1] == 'O' && map[i][2] == ' ') {
             char **texture_split = ft_split(map[i], ' ');
             map_data->so_texture = texture_split[1];
-            //printf("%s", map_data->so_texture);
+            remove_trailing_newline(map_data->so_texture);
             if (texture_split[2])
             {
                 write(2, "invalid given texture.\n", 23);
                 exit(1);
             }
-            remove_trailing_newline(map_data->so_texture);
             check_textures(map_data->so_texture);
         }
         else if (map[i][0] == 'W' && map[i][1] == 'E' && map[i][2] == ' ') {
             char **texture_split = ft_split(map[i], ' ');
             map_data->we_texture = texture_split[1];
-            //printf("%s", map_data->we_texture);
+            remove_trailing_newline(map_data->we_texture);
             if (texture_split[2])
             {
                 write(2, "invalid given texture.\n", 23);
                 exit(1);
             }
-            remove_trailing_newline(map_data->we_texture);
             check_textures(map_data->we_texture);
         }
         else if (map[i][0] == 'E' && map[i][1] == 'A' && map[i][2] == ' ') {
             char **texture_split = ft_split(map[i], ' ');
             map_data->ea_texture = texture_split[1];
-            //printf("%s", map_data->ea_texture);
+            remove_trailing_newline(map_data->ea_texture);
             if (texture_split[2])
             {
                 write(2, "invalid given texture.\n", 23);
                 exit(1);
             }
-            remove_trailing_newline(map_data->ea_texture);
             check_textures(map_data->ea_texture);
+        }
+        // check c and f
+        else if (map[i][0] == 'C' && map[i][1] == ' ') {
+            char **texture_split = ft_split(map[i], ' ');
+            map_data->ceiling = texture_split[1];
+            remove_trailing_newline(map_data->ceiling);
+            if (texture_split[2])
+            {
+                write(2, "invalid given texture.\n", 23);
+                exit(1);
+            }
+        }
+        else if (map[i][0] == 'F' && map[i][1] == ' ') {
+            char **texture_split = ft_split(map[i], ' ');
+            map_data->floor = texture_split[1];
+            remove_trailing_newline(map_data->floor);
+            if (texture_split[2])
+            {
+                write(2, "invalid given texture.\n", 23);
+                exit(1);
+            }
         }
         i++;
     }
 }
 
+/***********    *************    *************   *************/
 
+            /*    M A P     P A R S I N G     */
 
+/***********    *************    *************   *************/
 
 int main(int ac, char **av)
 {
     if (ac != 2)
         return (1);
+    t_map_info *map_data;
     get_file_extension(av[1]);
     int map = open(av[1], O_RDONLY);
     int map_total_lines = calc_lines(map);
@@ -343,18 +378,48 @@ int main(int ac, char **av)
         i++;
     }
     close(map);
-    // int j = 0;
-    // while (map_content[j])
-    // {
-    //     printf("%s", map_content[j]);
-    //     j++;
-    // }
-
-
     /*  map */
-    t_map_info *map_data;
     map_data = malloc(sizeof(t_map_info));
     check_num_of_texture(map_content);
-    fetch_textures(map_content, map_data);
+    set_textures_values(map_content, map_data);
+    /* parse map 2 */
+    //while loop until read the first 1
+    // return first line 1, start map index
+    i = 0;
+    int flag = 0;
+    while (map_content[i])
+    {
+        if (map_content[i][0] == '1')
+        {
+            if (flag == 0)
+            {
+                flag = 1;
+                map_data->start_index = i;
+                map_data->len_of_line = ft_strlen(map_content[i]);
+            }
+            else if (flag == 1)
+            {
+                map_data->end_index = i;
+                if (map_data->len_of_line != (int)ft_strlen(map_content[i])) {
+                    write(2, "--------\n", 9);
+                    exit(1);
+                }
+            }
+        }
+        else if (map_content[i][0] != '1' && flag == 1)
+        {
+            write(2, "--------\n", 9);
+            exit(1);
+        }
+        i++;
+    }
+    printf("start index is: %d |\t%s", map_data->start_index, map_content[map_data->start_index]);
+    printf("end index is: %d |\t%s", map_data->end_index, map_content[map_data->end_index]);        
     return 0;
 }
+
+
+// start_index;
+// end_index;
+// num_of_lines;
+// len_of_line;
