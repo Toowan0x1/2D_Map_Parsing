@@ -361,7 +361,6 @@ void    set_textures_values(char **map, t_map_info *map_data) {
 void    is_surrounded_by_Walls(char **map_content, t_map_info *map_data)
 {
     int i = map_data->start_index;
-    //int j;
     while (map_content[i])
     {
         if (i == map_data->start_index)
@@ -378,8 +377,6 @@ void    is_surrounded_by_Walls(char **map_content, t_map_info *map_data)
         }
         else if (i > map_data->start_index && i < map_data->end_index)
         {
-            //printf("=========> %c, %d\n", map_content[i][38], map_data->len_of_line - 1);
-            //printf("len of line is %d", map_data->len_of_line);
             if (map_content[i][0] != '1' || map_content[i][ft_strlen(map_content[i]) - 1] != '1')
             {
                 write(2, "********\n", 9);
@@ -398,11 +395,127 @@ void    is_surrounded_by_Walls(char **map_content, t_map_info *map_data)
                 j++;
             }
         }
-        //printf("i = %d\n", i);
         i++;
     }
 }
 
+/***********    *************    *************   *************/
+
+/*             T E X T U R E     P A R S I N G               */
+
+/***********    *************    *************   *************/
+
+// 255 + comas ',' + check if not digit then exit(1)
+// 2 comas in each of c and f and 3 numbers after trim the new line
+
+// texture li lfo9 check and trim
+
+//"C 35,59,0" "F 0,35,59", what i can give as a name for the function who check if they have 2 comas and 3 numbers between them and if there is a 
+
+void    atoi_textures() {
+    //
+}
+
+// if valid color format
+// has two comas
+// is valid color range 
+// valid floor and ceilling
+
+void    is_valid_color_range(char *str, t_map_info *map_data)
+{
+    int i = 0;
+    int res = 0;
+    (void)map_data;
+    if (str[i] == '-' || str[i] == '+')
+    {
+        if (str[i] == '-')
+        {
+            write(2, "*** invalid texture number ***\n", 31);
+            exit(1);
+        }
+        i++;
+    }
+    while (str[i] && str[i] != ',')
+    {
+        if (str[i] >= '0' && str[i] <= '9')
+        {
+            res *= 10;
+            res += str[i] - '0';
+        }
+        else
+        {
+            write(2, "*** invalid texture number ***\n", 31);
+            exit(1);
+        }
+        i++;
+    }
+    if (res > 255)
+    {
+        write(2, "*** texture number greather than 255 ***\n", 41);
+        exit(1);
+    }
+    //printf("res = %d\n", res);
+}
+
+void    is_valid_ceilling(t_map_info *map_data) {
+    int c_commas = 0;
+    int c_flag = 0;
+    int i = 0;
+    while (map_data->ceiling[i])
+    {
+        if ((map_data->ceiling[i] >= '0' && map_data->ceiling[i] <= '9') ||
+            (map_data->ceiling[i] == '+' || map_data->ceiling[i] == '-'))
+        {
+            if (c_flag == 0)
+            {
+                is_valid_color_range(&map_data->ceiling[i], map_data);
+                c_flag = 1;
+            }
+        }
+        else if (map_data->ceiling[i] == ',')
+        {
+            c_commas++;
+            if (c_flag == 1)
+                c_flag = 0;
+        }
+        else
+        {
+            write(2, "*** texture error ***\n", 22);
+            exit(1);
+        }
+        i++;
+    }
+}
+
+void    is_valid_floor(t_map_info *map_data) {
+    int f_commas = 0;
+    int f_flag = 0;
+    int i = 0;
+    while (map_data->floor[i])
+    {
+        if ((map_data->floor[i] >= '0' && map_data->floor[i] <= '9') ||
+            (map_data->floor[i] == '+' || map_data->floor[i] == '-'))
+        {
+            if (f_flag == 0)
+            {
+                is_valid_color_range(&map_data->floor[i], map_data);
+                f_flag = 1;
+            }
+        }
+        else if (map_data->floor[i] == ',')
+        {
+            f_commas++;
+            if (f_flag == 1)
+                f_flag = 0;
+        }
+        else
+        {
+            write(2, "*** texture error ***\n", 22);
+            exit(1);
+        }
+        i++;
+    }
+}
 
 int main(int ac, char **av)
 {
@@ -442,17 +555,13 @@ int main(int ac, char **av)
             {
                 flag = 1;
                 map_data->start_index = i;
-                remove_trailing_newline(map_content[i]); // **
+                remove_trailing_newline(map_content[i]);
                 map_data->len_of_line = ft_strlen(map_content[i]);
             }
             else if (flag == 1)
             {
                 map_data->end_index = i;
-                remove_trailing_newline(map_content[i]); // ** 
-                // if (map_data->len_of_line != (int)ft_strlen(map_content[i])) {
-                //     write(2, "--------\n", 9);
-                //     exit(1);
-                // }
+                remove_trailing_newline(map_content[i]);
             }
         }
         else if (map_content[i][0] != '1' && flag == 1)
@@ -461,21 +570,17 @@ int main(int ac, char **av)
             exit(1);
         }
         i++;
-    }
-    //printf("start index is: %d |\t%s", map_data->start_index, map_content[map_data->start_index]);
-    //printf("end index is: %d |\t%s", map_data->end_index, map_content[map_data->end_index]);        
-    
-    // check walls 11111 both start & end line
-    // check surounded wall each line 00 and 0[len] == 1
+    }    
     is_surrounded_by_Walls(map_content, map_data);
+    is_valid_ceilling(map_data);
+    is_valid_floor(map_data);
     // check player != 1 then print error and exit
-
     // also check if there is another character instead of 0,1, and W S N E 
     printf("success\n");
     return 0;
 }
 
-// make
-// ./parsing toowan.cub
-
+// parse colors
+// parse map
+// parse texture
 
