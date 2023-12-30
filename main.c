@@ -358,6 +358,52 @@ void    set_textures_values(char **map, t_map_info *map_data) {
 
 /***********    *************    *************   *************/
 
+void    is_surrounded_by_Walls(char **map_content, t_map_info *map_data)
+{
+    int i = map_data->start_index;
+    //int j;
+    while (map_content[i])
+    {
+        if (i == map_data->start_index)
+        {
+            int j = 0;
+            while (map_content[i][j]) {
+                if (map_content[i][j] != '1')
+                {
+                    write(1, "**** check walls ****\n", 23);
+                    exit(1);
+                }
+                j++;
+            }
+        }
+        else if (i > map_data->start_index && i < map_data->end_index)
+        {
+            //printf("=========> %c, %d\n", map_content[i][38], map_data->len_of_line - 1);
+            //printf("len of line is %d", map_data->len_of_line);
+            if (map_content[i][0] != '1' || map_content[i][ft_strlen(map_content[i]) - 1] != '1')
+            {
+                write(2, "********\n", 9);
+                exit(1);
+            }
+        }
+        else if (i == map_data->end_index)
+        {
+            int j = 0;
+            while (map_content[i][j]) {
+                if (map_content[i][j] != '1')
+                {
+                    write(1, "**** check walls ****\n", 23);
+                    exit(1);
+                }
+                j++;
+            }
+        }
+        //printf("i = %d\n", i);
+        i++;
+    }
+}
+
+
 int main(int ac, char **av)
 {
     if (ac != 2)
@@ -380,6 +426,7 @@ int main(int ac, char **av)
     close(map);
     /*  map */
     map_data = malloc(sizeof(t_map_info));
+    map_data->len_of_line = 0;
     check_num_of_texture(map_content);
     set_textures_values(map_content, map_data);
     /* parse map 2 */
@@ -395,15 +442,17 @@ int main(int ac, char **av)
             {
                 flag = 1;
                 map_data->start_index = i;
+                remove_trailing_newline(map_content[i]); // **
                 map_data->len_of_line = ft_strlen(map_content[i]);
             }
             else if (flag == 1)
             {
                 map_data->end_index = i;
-                if (map_data->len_of_line != (int)ft_strlen(map_content[i])) {
-                    write(2, "--------\n", 9);
-                    exit(1);
-                }
+                remove_trailing_newline(map_content[i]); // ** 
+                // if (map_data->len_of_line != (int)ft_strlen(map_content[i])) {
+                //     write(2, "--------\n", 9);
+                //     exit(1);
+                // }
             }
         }
         else if (map_content[i][0] != '1' && flag == 1)
@@ -413,13 +462,20 @@ int main(int ac, char **av)
         }
         i++;
     }
-    printf("start index is: %d |\t%s", map_data->start_index, map_content[map_data->start_index]);
-    printf("end index is: %d |\t%s", map_data->end_index, map_content[map_data->end_index]);        
+    //printf("start index is: %d |\t%s", map_data->start_index, map_content[map_data->start_index]);
+    //printf("end index is: %d |\t%s", map_data->end_index, map_content[map_data->end_index]);        
+    
+    // check walls 11111 both start & end line
+    // check surounded wall each line 00 and 0[len] == 1
+    is_surrounded_by_Walls(map_content, map_data);
+    // check player != 1 then print error and exit
+
+    // also check if there is another character instead of 0,1, and W S N E 
+    printf("success\n");
     return 0;
 }
 
+// make
+// ./parsing toowan.cub
 
-// start_index;
-// end_index;
-// num_of_lines;
-// len_of_line;
+
