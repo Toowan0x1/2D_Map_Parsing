@@ -673,3 +673,23 @@ int	check_wall(char **map, int i, int j)
 }
 
 */
+
+
+
+int	is_line_valid(char *line)
+{
+	int	i;
+	int	flag;
+
+	i = 0;
+	flag = 0;
+	while (line[i] && (line[i] == ' ' || line[i] == '\t'))
+	{
+		if (line[i] == '1')
+			return (1);
+		else if (line[i] == '0')
+			return (0);
+		i++;
+	}
+	return (0);
+}

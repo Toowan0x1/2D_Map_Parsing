@@ -166,19 +166,19 @@ void is_valid(char *str) {
     return ;
 }
 
-void get_file_extension(char *str) {
-    int i = 0;
+void check_file_extension(char *str)
+{
+    int i;
+    int index_to_start;
+
+    i = 0;
     while (str[i])
-    {
-        //printf("%d: %d\n", i, str[i]);
         i++;
-    }
-    int index_to_start = i - 4;
-    //printf("mapfile start at ==> %s\n", str + index_to_start);
-    if (ft_strcmp(str + index_to_start, ".cub") == 0) {
+    index_to_start = i - 4;
+    if (ft_strcmp(str + index_to_start, ".cub") == 0)
         is_valid(str);
-    }
-    else {
+    else
+    {
         write(2, "wrong file extention\n", 21);
         exit (1);
     }
@@ -228,6 +228,9 @@ typedef struct s_map_info
     int     end_index;
     int     num_of_lines;
     int     len_of_line;
+
+    // int     tmp_prev_indentation;
+    // int     tmp_curr_indentation;
 
     char    **map_data;
     char    *ceiling;
@@ -366,10 +369,14 @@ void    is_surrounded_by_Walls(char **map_content, t_map_info *map_data)
         if (i == map_data->start_index)
         {
             int j = 0;
-            while (map_content[i][j]) {
-                if (map_content[i][j] != '1')
+            while (map_content[i][j])
+            {
+                //printf("start index ='%s'\n", map_content[map_data->start_index]);
+                //printf("i='%d'\n", map_content[i][j]);
+                if (map_content[i][j] != '1' && map_content[i][j] != ' ')
                 {
-                    write(1, "**** check walls ****\n", 23);
+                    printf("j='%d'\n", map_content[i][j]);
+                    write(1, "**** check walls s ****\n", 23);
                     exit(1);
                 }
                 j++;
@@ -405,22 +412,6 @@ void    is_surrounded_by_Walls(char **map_content, t_map_info *map_data)
 
 /***********    *************    *************   *************/
 
-// 255 + comas ',' + check if not digit then exit(1)
-// 2 comas in each of c and f and 3 numbers after trim the new line
-
-// texture li lfo9 check and trim
-
-//"C 35,59,0" "F 0,35,59", what i can give as a name for the function who check if they have 2 comas and 3 numbers between them and if there is a 
-
-void    atoi_textures() {
-    //
-}
-
-// if valid color format
-// has two comas
-// is valid color range 
-// valid floor and ceilling
-
 void    is_valid_color_range(char *str, t_map_info *map_data)
 {
     int i = 0;
@@ -454,7 +445,6 @@ void    is_valid_color_range(char *str, t_map_info *map_data)
         write(2, "*** texture number greather than 255 ***\n", 41);
         exit(1);
     }
-    //printf("res = %d\n", res);
 }
 
 void    is_valid_ceilling(t_map_info *map_data) {
@@ -517,17 +507,132 @@ void    is_valid_floor(t_map_info *map_data) {
     }
 }
 
+int     is_valid_line(char **line, int i)
+{
+	int j = 0;
+    while (line[i][j])
+    {
+        if (line[i][j] != '1' && line[i][j] != '0' && line[i][j] != ' ' && line[i][j] != '\t')
+            return (0);
+        else if (line[i][j] == 0)
+            return (0);
+        j++;
+    }
+    return(1);
+}
+
+// n7seb les espaces dyal current line onmchi l previous line nchof wach same number ta3 espace fih 1 f previous one
+
+void    is_valid_line2(char **line, int i)
+{
+    int j;
+    j = 0;
+    while (line[i][j])
+    {
+        if (line[i][j] == ' ')
+        {
+            if (line[i - 1][j] == '0' || line[i + 1][j] == '0')
+            {
+                printf("bff 0 detected in line x: %d", i);
+                exit(1);
+            }
+        }
+        else if (line[i][j] == '0')
+        {
+            if (line[i - 1][j] == ' ' || line[i + 1][j] == ' ')
+            {
+                printf("bff 0 detected in line y: %d", i);
+                exit(1);
+            }
+        }
+        j++;
+    }
+}
+
+
+
+int kmala(char *line) {
+    int j = 0;
+    if (!line[j])
+        return (0);
+    while (line[j]) {
+        if (line[j] != '1' && line[j] != '0' && line[j] != ' ' && line[j] != '\t') {
+            return 0; // Non-valid character found
+        }
+        j++;
+    }
+
+    return 1; // Valid line
+}
+
+int get_map_first_line(char **lines) {
+    int i = 0;
+    while (lines[i]) {
+        remove_trailing_newline(lines[i]);
+        if (kmala(lines[i])) {
+            return i; // Found the first valid line, return its index
+        }
+        i++;
+    }
+    return -1; // No valid line found
+}
+
+void    get_map_last_line(char **line, t_map_info *map_data)
+{
+    int i = 11;
+    while (line[i])
+    {
+        remove_trailing_newline(line[i]);
+        if (!line[i])
+            break ;
+        if (kmala(line[i]))
+            map_data->end_index = i;
+        //else
+            //map_data->end_index = i - 1;
+        i++;
+    }
+}
+// last line and gap between lines  .....
+
+void    check_if_map_gap(char **line, int start, int end)
+{
+    int i = 0;
+    while (start <= end)
+    {
+        if (line[start] && line[start][0] == 0)
+        {
+            printf("%c\n", line[start][i]);
+            printf("map gaps 1\n");
+            exit(1);
+        }
+        i = 0;
+        while (line[start][i])
+        {
+            if (line[start][i] != '0' && line[start][i] != '1' && line[start][i] != 'W' && line[start][i] != ' ' && line[start][i] != '\t')
+            {
+                printf("%c\n", line[start][i]);
+                printf("maps gaps character \n");
+                exit(1);
+            }
+            i++;
+        }
+        start++;
+    }
+}
+
 int main(int ac, char **av)
 {
     if (ac != 2)
         return (1);
     t_map_info *map_data;
-    get_file_extension(av[1]);
+    char **map_content;
+    check_file_extension(av[1]);
     int map = open(av[1], O_RDONLY);
     int map_total_lines = calc_lines(map);
     close(map);
-    char **map_content = (char **)malloc(sizeof(char *) * (map_total_lines + 1));
-    int i = 0;
+    map_content = (char **)malloc(sizeof(char *) * (map_total_lines + 1));
+    int i;
+    i = 0;
     char *line;
     map = open(av[1], O_RDONLY);
     while ((line = get_next_line(map)) != NULL)
@@ -537,50 +642,65 @@ int main(int ac, char **av)
         i++;
     }
     close(map);
-    /*  map */
+    /*  map  */
     map_data = malloc(sizeof(t_map_info));
     map_data->len_of_line = 0;
-    check_num_of_texture(map_content);
-    set_textures_values(map_content, map_data);
+    
+    /* CHECK TEXTURES */
+    check_num_of_texture(map_content); // number of total textures 
+    set_textures_values(map_content, map_data); // values of direction
+    is_valid_ceilling(map_data); // ceilling and floor
+    is_valid_floor(map_data); // ceilling and floor
+    /* END -- CHECK TEXTURES */
+    
     /* parse map 2 */
     //while loop until read the first 1
     // return first line 1, start map index
-    i = 0;
-    int flag = 0;
-    while (map_content[i])
+    i = map_data->start_index = get_map_first_line(map_content);
+    get_map_last_line(map_content, map_data);
+    check_if_map_gap(map_content, map_data->start_index, map_data->end_index);
+    while (map_content[i] && i <= map_data->end_index)
     {
-        if (map_content[i][0] == '1')
+        remove_trailing_newline(map_content[i]);
+        if (is_valid_line(map_content, i))
         {
-            if (flag == 0)
+            //printf("i=%d=%s\n", i, map_content[i]);
+            if (i == map_data->start_index)
+                i = i; // function to check first line of the map wach surounded by walls 1
+            else if (i > map_data->start_index) // if i >= start_index && i <= end_index
             {
-                flag = 1;
-                map_data->start_index = i;
-                remove_trailing_newline(map_content[i]);
-                map_data->len_of_line = ft_strlen(map_content[i]);
+                is_valid_line2(map_content, i); // check 0 and ' ' under and above lines
             }
-            else if (flag == 1)
-            {
-                map_data->end_index = i;
-                remove_trailing_newline(map_content[i]);
-            }
-        }
-        else if (map_content[i][0] != '1' && flag == 1)
-        {
-            write(2, "--------\n", 9);
-            exit(1);
+            else if (i == map_data->end_index)
+            {}
         }
         i++;
-    }    
-    is_surrounded_by_Walls(map_content, map_data);
-    is_valid_ceilling(map_data);
-    is_valid_floor(map_data);
-    // check player != 1 then print error and exit
-    // also check if there is another character instead of 0,1, and W S N E 
+    }
+    printf("\n");
+    int g = map_data->start_index;
+    while (g <= map_data->end_index)
+    {
+        printf("i=%d=%s\n", g, map_content[g]);
+        g++;
+    }
+    //is_surrounded_by_Walls(map_content, map_data);
+    // PARSE MAP CHARACTERS, PLAYER
     printf("success\n");
-    return 0;
+    return (0);
 }
 
-// parse colors
-// parse map
-// parse texture
+/*
+int color_c;
+int color_f;
+*/
 
+/* checklist: */
+// check player != 1 then print error and exit
+// also check if there is another character instead of 0,1, and W S N E 
+// check walls each line il fih another character
+// check latest and first index of each line if its 1
+
+// if valid color format
+// has two comas
+// is valid color range 
+// valid floor and ceilling
