@@ -594,7 +594,7 @@ void    get_map_last_line(char **line, t_map_info *map_data)
 }
 // last line and gap between lines  .....
 
-void    check_if_map_gap(char **line, int start, int end)
+void    has_gap_between_lines(char **line, int start, int end)
 {
     int i = 0;
     while (start <= end)
@@ -608,8 +608,10 @@ void    check_if_map_gap(char **line, int start, int end)
         i = 0;
         while (line[start][i])
         {
+            remove_trailing_newline(line[start]);
             if (line[start][i] != '0' && line[start][i] != '1' && line[start][i] != 'W' && line[start][i] != ' ' && line[start][i] != '\t')
             {
+                printf("start is %d %s", start, line[start]);
                 printf("%c\n", line[start][i]);
                 printf("maps gaps character \n");
                 exit(1);
@@ -618,6 +620,23 @@ void    check_if_map_gap(char **line, int start, int end)
         }
         start++;
     }
+}
+
+void    is_surrounded_by_ones(char *line)
+{
+    int i = 0;
+    printf("f=");
+    while (line[i])
+    {
+        printf("%c", line[i]);
+        if (line[i] != '1' && line[i] != ' ' && line[i] != '\t')
+        {
+            printf("is_surrounded_by_ones\n");
+            exit(1);
+        }
+        i++;
+    }
+    printf("\n");
 }
 
 int main(int ac, char **av)
@@ -653,39 +672,38 @@ int main(int ac, char **av)
     is_valid_floor(map_data); // ceilling and floor
     /* END -- CHECK TEXTURES */
     
-    /* parse map 2 */
-    //while loop until read the first 1
-    // return first line 1, start map index
+    /* PARSE MAP */
     i = map_data->start_index = get_map_first_line(map_content);
     get_map_last_line(map_content, map_data);
-    check_if_map_gap(map_content, map_data->start_index, map_data->end_index);
+    has_gap_between_lines(map_content, map_data->start_index, map_data->end_index);
     while (map_content[i] && i <= map_data->end_index)
     {
         remove_trailing_newline(map_content[i]);
         if (is_valid_line(map_content, i))
         {
-            //printf("i=%d=%s\n", i, map_content[i]);
+            printf("i=%d=%s\n", i, map_content[i]);
             if (i == map_data->start_index)
-                i = i; // function to check first line of the map wach surounded by walls 1
+                is_surrounded_by_ones(map_content[i]); // function to check first line of the map wach surounded by walls 1
             else if (i > map_data->start_index) // if i >= start_index && i <= end_index
             {
                 is_valid_line2(map_content, i); // check 0 and ' ' under and above lines
             }
             else if (i == map_data->end_index)
-            {}
+                is_surrounded_by_ones(map_content[i]);
         }
         i++;
     }
+    /*
     printf("\n");
     int g = map_data->start_index;
     while (g <= map_data->end_index)
     {
         printf("i=%d=%s\n", g, map_content[g]);
         g++;
-    }
+    }*/
     //is_surrounded_by_Walls(map_content, map_data);
     // PARSE MAP CHARACTERS, PLAYER
-    printf("success\n");
+    printf("\n ==> parsing successful <==\n");
     return (0);
 }
 
