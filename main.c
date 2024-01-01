@@ -521,8 +521,6 @@ int     is_valid_line(char **line, int i)
     return(1);
 }
 
-// n7seb les espaces dyal current line onmchi l previous line nchof wach same number ta3 espace fih 1 f previous one
-
 void    is_valid_line2(char **line, int i)
 {
     int j;
@@ -585,14 +583,20 @@ void    get_map_last_line(char **line, t_map_info *map_data)
         remove_trailing_newline(line[i]);
         if (!line[i])
             break ;
-        if (kmala(line[i]))
+        if (line[i][0] == '1' && line[i][ft_strlen(line[i]) - 1] == '1')
             map_data->end_index = i;
+        else if (line[i][0] == '1' && !line[i][1])
+            map_data->end_index = i;
+        //if (kmala2(line[i]))
+            //map_data->end_index = i;
         //else
             //map_data->end_index = i - 1;
         i++;
     }
 }
 // last line and gap between lines  .....
+
+// n7seb gap mn map_end tal EOF of file
 
 void    has_gap_between_lines(char **line, int start, int end)
 {
@@ -625,20 +629,26 @@ void    has_gap_between_lines(char **line, int start, int end)
 void    is_surrounded_by_ones(char *line)
 {
     int i = 0;
-    printf("f=");
     while (line[i])
     {
-        printf("%c", line[i]);
-        if (line[i] != '1' && line[i] != ' ' && line[i] != '\t')
+        if ((line[i] != '1' && line[i] != ' ') || line[i] == '0')
         {
             printf("is_surrounded_by_ones\n");
             exit(1);
         }
         i++;
     }
-    printf("\n");
 }
 
+// check jnab
+// 7seb gap between texture and map before looping on map
+/*
+texture start
+texture end
+map start
+map end
+eof index
+*/
 int main(int ac, char **av)
 {
     if (ac != 2)
@@ -679,28 +689,22 @@ int main(int ac, char **av)
     while (map_content[i] && i <= map_data->end_index)
     {
         remove_trailing_newline(map_content[i]);
-        if (is_valid_line(map_content, i))
-        {
-            printf("i=%d=%s\n", i, map_content[i]);
-            if (i == map_data->start_index)
-                is_surrounded_by_ones(map_content[i]); // function to check first line of the map wach surounded by walls 1
-            else if (i > map_data->start_index) // if i >= start_index && i <= end_index
-            {
-                is_valid_line2(map_content, i); // check 0 and ' ' under and above lines
-            }
-            else if (i == map_data->end_index)
-                is_surrounded_by_ones(map_content[i]);
-        }
+        if (i == map_data->start_index)
+            is_surrounded_by_ones(map_content[map_data->start_index]); // function to check first line of the map wach surounded by walls 1
+        else if (i > map_data->start_index && i < map_data->start_index) // if i >= start_index && i <= end_index
+            is_valid_line2(map_content, i); // check 0 and ' ' under and above lines
+        else if (i == map_data->end_index)
+            is_surrounded_by_ones(map_content[map_data->end_index]);
+        //}
         i++;
     }
-    /*
     printf("\n");
     int g = map_data->start_index;
     while (g <= map_data->end_index)
     {
         printf("i=%d=%s\n", g, map_content[g]);
         g++;
-    }*/
+    }
     //is_surrounded_by_Walls(map_content, map_data);
     // PARSE MAP CHARACTERS, PLAYER
     printf("\n ==> parsing successful <==\n");
