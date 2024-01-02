@@ -2,6 +2,7 @@
 #include "stdlib.h"
 #include "fcntl.h"
 #include "gnl/get_next_line.h"
+#include "libft/libft.h"
 
 typedef struct s_map_info
 {
@@ -53,141 +54,6 @@ void    show_info(t_map_info *map_data)
     printf("\n ==> parsing successful <==\n");
 }
 
-/* ft split start */
-static int	count_strings(const char *str, char c)
-{
-	int	i;
-	int	trigger;
-
-	i = 0;
-	trigger = 0;
-	while (*str)
-	{
-		if (*str != c && trigger == 0)
-		{
-			trigger = 1;
-			i++;
-		}
-		else if (*str == c)
-			trigger = 0;
-		str++;
-	}
-	return (i);
-}
-
-int	ft_strlen_sep(char *str, char c)
-{
-	int	i;
-
-	i = 0;
-	while (str[i] && (str[i] != c))
-		i++;
-	return (i);
-}
-
-char	*ft_word(char *str, char c)
-{
-	int		len_word;
-	int		i;
-	char	*word;
-
-	i = 0;
-	len_word = ft_strlen_sep(str, c);
-	word = (char *)malloc(sizeof(char) * (len_word + 1));
-	if (!word)
-		return (NULL);
-	while (i < len_word)
-	{
-		word[i] = str[i];
-		i++;
-	}
-	word[i] = '\0';
-	return (word);
-}
-
-char	**ft_split(const char *s, char c)
-{
-	char	**strings;
-	int		i;
-	int		total_strs;
-
-	i = 0;
-	total_strs = count_strings((char *)s, c);
-	strings = (char **)malloc(sizeof(char *) * total_strs + 1);
-	if (!strings)
-		return (NULL);
-	while (*s)
-	{
-		while (*s && (*s == c))
-			s++;
-		if (*s)
-		{
-			strings[i] = ft_word((char *)s, c);
-			i++;
-		}
-		while (*s && !(*s == c))
-			s++;
-	}
-	strings[i] = 0;
-	return (strings);
-}
-/* ft_split end */
-
-void	*ft_memcpy(void *dst, const void *src, size_t n)
-{
-	size_t	index;
-
-	if (dst == src || !n)
-		return (dst);
-	index = 0;
-	while (index < n)
-	{
-		*((char *) dst + index) = *((char *)src + index);
-		index++;
-	}
-	return (dst);
-}
-
-int ft_strcmp(const char *s1, const char *s2) {
-    while (*s1 != '\0' && *s2 != '\0') {
-        if (*s1 != *s2) {
-            return (*s1 - *s2);
-        }
-        s1++;
-        s2++;
-    }
-    // Check for the case where one string is shorter than the other
-    return (*s1 - *s2);
-}
-
-char	*ft_strndup(char *s1, int n)
-{
-	char	*p;
-	int		i;
-
-	i = 0;
-	p = calloc(ft_strlen(s1), sizeof(char));
-	while (i < n)
-	{
-		p[i] = s1[i];
-		i++;
-	}
-	p[i] = '\0';
-	return (p);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -208,7 +74,7 @@ void    check_unsurrounded_zeros(char **line, int i)
         {
             if (line[i - 1][j] == '0' || line[i + 1][j] == '0')
             {
-                printf("MAP ERROR: Unsurrounded 0 detected in line %d\n", i+1);
+                printf("MAP ERROR: Unsurrounded 0 detected in line %d\n", i + 1);
                 exit(1);
             }
         }
@@ -217,7 +83,7 @@ void    check_unsurrounded_zeros(char **line, int i)
             if ((line[i - 1][j] == ' ' || line[i + 1][j] == ' ') ||
                 (j > (int)ft_strlen(line[i - 1]) - 1 || j > (int)ft_strlen(line[i + 1]) - 1))
             {
-                printf("MAP ERROR: Unsurrounded 0 detected in line %d\n", i+1);
+                printf("MAP ERROR: Unsurrounded 0 detected in line %d\n", i + 1);
                 exit(1);
             }
         }
@@ -273,19 +139,6 @@ void    map_parse(t_map_info *map_data)
 
 
 
-
-
-
-int	calc_lines(int map_fd)
-{
-	int	i;
-
-	i = 0;
-	while (get_next_line(map_fd) != NULL)
-		i++;
-	close(map_fd);
-	return (i);
-}
 
 void is_file_valid(char *str) {
     int fd;
@@ -639,7 +492,16 @@ void    has_gap_between_lines(char **line, int start, int end)
 
 
 
+int	calc_lines(int map_fd)
+{
+	int	i;
 
+	i = 0;
+	while (get_next_line(map_fd) != NULL)
+		i++;
+	close(map_fd);
+	return (i);
+}
 
 void    read_and_store_map(char *map_name, t_map_info *map_data)
 {
@@ -648,9 +510,8 @@ void    read_and_store_map(char *map_name, t_map_info *map_data)
     int     i;
     
     map_fd = open(map_name, O_RDONLY);
-    map_data->num_of_lines = calc_lines(map_fd);
     close(map_fd);
-    map_data->map_content = (char **)malloc(sizeof(char *) * (map_data->num_of_lines + 1));
+    map_data->map_content = (char **)malloc(sizeof(char *) * (calc_lines(map_fd) + 1));
     i = 0;
     map_fd = open(map_name, O_RDONLY);;
     while ((line = get_next_line(map_fd)) != NULL)
@@ -771,9 +632,15 @@ int main(int ac, char **av)
     textures_parse(map_data);
     has_gap_between_lines(map_data->map_content, map_data->map_start_index, map_data->map_end_index);
     map_parse(map_data);
-    printf("=>sucess<=");
+    show_info(map_data);
+    printf("****   success  ****");
     return (0);
 }
+
+/* bfff leak issue:
+    e1r3p1% ./parsing map.cub
+    zsh: segmentation fault  ./parsing map.cub
+*/
 
 // check jnab
 // 7seb gap between texture and map before looping on map
@@ -803,4 +670,18 @@ texture/npn0.xpm\n  17
 n = 15
 
 texture/npn0.xpm
+*/
+
+/*
+check double
+check there is one player
+ft_put_error std2
+int	check_chars(char c)
+{
+	if (c != 'W' && c != 'S' && c != 'E' && c != 'N')
+	{
+		return (1);
+	}
+	return (0);
+}
 */
