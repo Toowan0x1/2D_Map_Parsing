@@ -138,18 +138,6 @@ void    map_parse(t_map_info *map_data)
 
 
 
-
-int	calc_lines(int map_fd)
-{
-	int	i;
-
-	i = 0;
-	while (get_next_line(map_fd) != NULL)
-		i++;
-	close(map_fd);
-	return (i);
-}
-
 void is_file_valid(char *str) {
     int fd;
 
@@ -499,6 +487,17 @@ void    has_gap_between_lines(char **line, int start, int end)
     }
 }
 
+int	calc_lines(int map_fd)
+{
+	int	i;
+
+	i = 0;
+	while (get_next_line(map_fd) != NULL)
+		i++;
+	close(map_fd);
+	return (i);
+}
+
 void    read_and_store_map(char *map_name, t_map_info *map_data)
 {
     char    *line;
@@ -506,9 +505,8 @@ void    read_and_store_map(char *map_name, t_map_info *map_data)
     int     i;
     
     map_fd = open(map_name, O_RDONLY);
-    map_data->num_of_lines = calc_lines(map_fd);
     close(map_fd);
-    map_data->map_content = (char **)malloc(sizeof(char *) * (map_data->num_of_lines + 1));
+    map_data->map_content = (char **)malloc(sizeof(char *) * (calc_lines(map_fd) + 1));
     i = 0;
     map_fd = open(map_name, O_RDONLY);;
     while ((line = get_next_line(map_fd)) != NULL)
@@ -633,8 +631,6 @@ int main(int ac, char **av)
     printf("=>sucess<=");
     return (0);
 }
-
-
 
 /* bfff leak issue:
     e1r3p1% ./parsing map.cub
