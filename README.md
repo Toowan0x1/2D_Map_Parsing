@@ -1,5 +1,7 @@
 # cub3D: 2D Map Parsing
 
+<img src="https://raw.githubusercontent.com/Toowan0x1/cub3d_parsing/master/Screenshot%20from%202024-01-02%2005-08-01.png">
+
 ## About
 ### Map files (.cub)
 
