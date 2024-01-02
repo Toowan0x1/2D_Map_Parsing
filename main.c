@@ -3,6 +3,55 @@
 #include "fcntl.h"
 #include "gnl/get_next_line.h"
 
+typedef struct s_map_info
+{
+    int     texture_start_index;
+    int     texture_end_index;
+    int     map_start_index;
+    int     map_end_index;
+    int     eof_index;
+    int     num_of_lines;
+    int     len_of_line;
+
+    char    **map_content;
+    char    *ceiling;
+    char    *floor;
+    char    *no_texture;
+    char    *so_texture;
+    char    *we_texture;
+    char    *ea_texture;
+
+    int     color_c;
+    int     color_f;
+}   t_map_info;
+
+/* helpers and utils */
+void remove_trailing_newline(char *str) {
+    int len = ft_strlen(str);
+    if (len > 0 && str[len - 1] == '\n') {
+        // Replace newline with null terminator:
+        str[len - 1] = '\0';
+        // if str[len] exist then free str[len] character.
+    }
+}
+
+void    show_info(t_map_info *map_data)
+{
+    printf("\n");
+    int index = map_data->texture_start_index;
+    while (index <= map_data->map_end_index)
+    {
+        printf("i=%d=%s\n", index, map_data->map_content[index]);
+        index++;
+    }
+    // printf("\n");
+    // printf("textures start at index: %d\n", map_data->texture_start_index);
+    // printf("textures end at index: %d\n", map_data->texture_end_index);
+    // printf("map start at index: %d\n", map_data->map_start_index);
+    // printf("map end at index: %d\n", map_data->map_end_index);
+    // printf("map eof index: %d\n", map_data->eof_index);
+    printf("\n ==> parsing successful <==\n");
+}
 
 /* ft split start */
 static int	count_strings(const char *str, char c)
@@ -126,21 +175,106 @@ char	*ft_strndup(char *s1, int n)
 	p[i] = '\0';
 	return (p);
 }
-/*
-texture/npn0.xpm\n  17
-n = 15
 
-texture/npn0.xpm
-*/
 
-// char    *fill_map(int map_fd, char *map_content, int index) {
-//     char *line;
-//     int i = 0;
-//     while ((line = get_next_line(map_fd)) != NULL && i < index)
-//         i++;
-//     map_content = malloc(sizeof(char *) * ft_strlen(line));
-//     return (ft_strdup(line));
-// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***********    *************    *************   *************/
+
+            /*    M A P     P A R S I N G     */
+
+/***********    *************    *************   *************/
+
+void    check_unsurrounded_zeros(char **line, int i)
+{
+    int j;
+
+    j = 0;
+    while (line[i][j])
+    {
+        if (line[i][j] == ' ')
+        {
+            if (line[i - 1][j] == '0' || line[i + 1][j] == '0')
+            {
+                printf("MAP ERROR: Unsurrounded 0 detected in line %d\n", i+1);
+                exit(1);
+            }
+        }
+        else if (line[i][j] == '0')
+        {
+            if ((line[i - 1][j] == ' ' || line[i + 1][j] == ' ') ||
+                (j > (int)ft_strlen(line[i - 1]) - 1 || j > (int)ft_strlen(line[i + 1]) - 1))
+            {
+                printf("MAP ERROR: Unsurrounded 0 detected in line %d\n", i+1);
+                exit(1);
+            }
+        }
+        j++;
+    }
+}
+
+void    check_surrounded_by_ones(char *line)
+{
+    int i;
+    
+    i = 0;
+    while (line[i])
+    {
+        if (line[i] != '1' && line[i] != ' ')
+        {
+            printf("MAP ERROR: The first or last line is not fully enclosed by walls.\n");
+            exit(1);
+        }
+        i++;
+    }
+}
+
+void    map_parse(t_map_info *map_data)
+{
+    int i;
+
+    i = map_data->map_start_index;
+    while (map_data->map_content[i] && i <= map_data->map_end_index)
+    {
+        if (i == map_data->map_start_index)
+            check_surrounded_by_ones(map_data->map_content[map_data->map_start_index]);
+        else if (i > map_data->map_start_index && i < map_data->map_end_index)
+            check_unsurrounded_zeros(map_data->map_content, i);
+        else if (i == map_data->map_end_index)
+            check_surrounded_by_ones(map_data->map_content[map_data->map_end_index]);
+        i++;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 int	calc_lines(int map_fd)
 {
@@ -153,7 +287,7 @@ int	calc_lines(int map_fd)
 	return (i);
 }
 
-void is_valid(char *str) {
+void is_file_valid(char *str) {
     int fd;
 
     fd = open(str, O_RDONLY);
@@ -166,87 +300,23 @@ void is_valid(char *str) {
     return ;
 }
 
-void check_file_existence_and_extension(char *str)
+void check_file_existence_and_extension(char *file)
 {
     int i;
     int index_to_start;
 
     i = 0;
-    while (str[i])
+    while (file[i])
         i++;
     index_to_start = i - 4;
-    if (ft_strcmp(str + index_to_start, ".cub") == 0)
-        is_valid(str);
+    if (ft_strcmp(file + index_to_start, ".cub") == 0)
+        is_file_valid(file);
     else
     {
         write(2, "wrong file extention\n", 21);
         exit (1);
     }
 }
-
-void    check_number_of_texture(char **map) {
-    int i = 0;
-    int total_textures = 0;
-    while (map[i])
-    {
-        if (map[i][0] == 'N' && map[i][1] == 'O' && map[i][2] == ' ') {
-            total_textures++;
-        }
-        else if (map[i][0] == 'S' && map[i][1] == 'O' && map[i][2] == ' ') {
-            total_textures++;
-        }
-        else if (map[i][0] == 'W' && map[i][1] == 'E' && map[i][2] == ' ') {
-            total_textures++;
-        }
-        else if (map[i][0] == 'E' && map[i][1] == 'A' && map[i][2] == ' ') {
-            total_textures++;
-        }
-        //
-        else if (map[i][0] == 'C' && map[i][1] == ' ')
-        {
-            total_textures++;
-        }
-        else if (map[i][0] == 'F' && map[i][1] == ' ')
-        {
-            total_textures++;
-        }
-        i++;
-    }
-    if (total_textures != 6)
-    {
-        write(2, "invalid number of textures.\n", 28);
-        exit(1);
-    }
-}
-
-/*
-texture start
-texture end
-map start
-map end
-eof index
-*/
-typedef struct s_map_info
-{
-    int     texture_start_index;
-    int     texture_end_index;
-    int     map_start_index;
-    int     map_end_index;
-    int     eof_index;
-    int     num_of_lines;
-    int     len_of_line;
-
-    char    **map_content;
-    char    *ceiling;
-    char    *floor;
-    char    *no_texture;
-    char    *so_texture;
-    char    *we_texture;
-    char    *ea_texture;
-
-    int     color_c;
-    int     color_f;
-}   t_map_info;
 
 void    check_texture_valid(char *texture)
 {
@@ -278,15 +348,6 @@ void    check_textures(char *texture)
 {
     check_xpm_extension(texture);
     check_texture_valid(texture);
-}
-
-void remove_trailing_newline(char *str) {
-    int len = ft_strlen(str);
-    if (len > 0 && str[len - 1] == '\n') {
-        // Replace newline with null terminator:
-        str[len - 1] = '\0';
-        // if str[len] exist then free str[len] character.
-    }
 }
 
 void    set_textures_values(char **map, t_map_info *map_data) {
@@ -359,60 +420,44 @@ void    set_textures_values(char **map, t_map_info *map_data) {
 
 /***********    *************    *************   *************/
 
-            /*    M A P     P A R S I N G     */
-
-/***********    *************    *************   *************/
-
-void    is_surrounded_by_Walls(char **map_content, t_map_info *map_data)
-{
-    int i = map_data->map_start_index;
-    while (map_content[i])
-    {
-        if (i == map_data->map_start_index)
-        {
-            int j = 0;
-            while (map_content[i][j])
-            {
-                //printf("start index ='%s'\n", map_content[map_data->start_index]);
-                //printf("i='%d'\n", map_content[i][j]);
-                if (map_content[i][j] != '1' && map_content[i][j] != ' ')
-                {
-                    printf("j='%d'\n", map_content[i][j]);
-                    write(1, "**** check walls s ****\n", 23);
-                    exit(1);
-                }
-                j++;
-            }
-        }
-        else if (i > map_data->map_start_index && i < map_data->map_end_index)
-        {
-            if (map_content[i][0] != '1' || map_content[i][ft_strlen(map_content[i]) - 1] != '1')
-            {
-                write(2, "********\n", 9);
-                exit(1);
-            }
-        }
-        else if (i == map_data->map_end_index)
-        {
-            int j = 0;
-            while (map_content[i][j]) {
-                if (map_content[i][j] != '1')
-                {
-                    write(1, "**** check walls ****\n", 23);
-                    exit(1);
-                }
-                j++;
-            }
-        }
-        i++;
-    }
-}
-
-/***********    *************    *************   *************/
-
 /*             T E X T U R E     P A R S I N G               */
 
 /***********    *************    *************   *************/
+
+void    check_number_of_texture(char **map) {
+    int i = 0;
+    int total_textures = 0;
+    while (map[i])
+    {
+        if (map[i][0] == 'N' && map[i][1] == 'O' && map[i][2] == ' ') {
+            total_textures++;
+        }
+        else if (map[i][0] == 'S' && map[i][1] == 'O' && map[i][2] == ' ') {
+            total_textures++;
+        }
+        else if (map[i][0] == 'W' && map[i][1] == 'E' && map[i][2] == ' ') {
+            total_textures++;
+        }
+        else if (map[i][0] == 'E' && map[i][1] == 'A' && map[i][2] == ' ') {
+            total_textures++;
+        }
+        //
+        else if (map[i][0] == 'C' && map[i][1] == ' ')
+        {
+            total_textures++;
+        }
+        else if (map[i][0] == 'F' && map[i][1] == ' ')
+        {
+            total_textures++;
+        }
+        i++;
+    }
+    if (total_textures != 6)
+    {
+        write(2, "invalid number of textures.\n", 28);
+        exit(1);
+    }
+}
 
 void    is_valid_color_range(char *str, t_map_info *map_data)
 {
@@ -509,62 +554,7 @@ void    is_valid_floor(t_map_info *map_data) {
     }
 }
 
-// int     is_valid_line(char **line, int i)
-// {
-// 	int j = 0;
-//     while (line[i][j])
-//     {
-//         if (line[i][j] != '1' && line[i][j] != '0' && line[i][j] != ' ' && line[i][j] != '\t')
-//             return (0);
-//         else if (line[i][j] == 0)
-//             return (0);
-//         j++;
-//     }
-//     return(1);
-// }
 
-void    check_unsurrounded_zeros(char **line, int i)
-{
-    int j;
-    j = 0;
-    while (line[i][j])
-    {
-        if (line[i][j] == ' ')
-        {
-            if (line[i - 1][j] == '0' || line[i + 1][j] == '0')
-            {
-                printf("MAP ERROR: Unsurrounded 0 detected in line %d\n", i+1);
-                exit(1);
-            }
-        }
-        else if (line[i][j] == '0')
-        {
-            if ((line[i - 1][j] == ' ' || line[i + 1][j] == ' ') ||
-                (j > (int)ft_strlen(line[i - 1]) - 1 || j > (int)ft_strlen(line[i + 1]) - 1))
-            {
-                printf("MAP ERROR: Unsurrounded 0 detected in line %d\n", i+1);
-                exit(1);
-            }
-        }
-        j++;
-    }
-}
-
-void    check_surrounded_by_ones(char *line)
-{
-    int i;
-    
-    i = 0;
-    while (line[i])
-    {
-        if (line[i] != '1' && line[i] != ' ')
-        {
-            printf("MAP ERROR: The first or last line is not fully enclosed by walls.\n");
-            exit(1);
-        }
-        i++;
-    }
-}
 
 int kmala(char *line) {
     int j = 0;
@@ -674,6 +664,14 @@ void    read_and_store_map(char *map_name, t_map_info *map_data)
     close(map_fd);
 }
 
+
+
+/***********    *************    *************   *************/
+
+/*         S E T    M A P   L I N E   R A N G E S            */
+
+/***********    *************    *************   *************/
+
 void    get_eof_index(t_map_info *map_data)
 {
     int i;
@@ -743,45 +741,24 @@ void    get_texture_last_line(t_map_info *map_data)
     }
 }
 
-void    show_info(t_map_info *map_data)
+void    init_map_line_ranges(t_map_info *map_data)
 {
-    printf("\n");
-    int index = map_data->texture_start_index;
-    while (index <= map_data->map_end_index)
-    {
-        printf("i=%d=%s\n", index, map_data->map_content[index]);
-        index++;
-    }
-    // printf("\n");
-    // printf("textures start at index: %d\n", map_data->texture_start_index);
-    // printf("textures end at index: %d\n", map_data->texture_end_index);
-    // printf("map start at index: %d\n", map_data->map_start_index);
-    // printf("map end at index: %d\n", map_data->map_end_index);
-    // printf("map eof index: %d\n", map_data->eof_index);
-    printf("\n ==> parsing successful <==\n");
+    get_texture_first_line(map_data);
+    get_texture_last_line(map_data);
+    get_map_first_line(map_data);
+    get_map_last_line(map_data);
+    get_eof_index(map_data);
+}
+
+void    textures_parse(t_map_info *map_data)
+{
+    check_number_of_texture(map_data->map_content);
+    set_textures_values(map_data->map_content, map_data); // values of direction
+    is_valid_ceilling(map_data);
+    is_valid_floor(map_data);
 }
 
 
-void    map_parse(t_map_info *map_data)
-{
-    int i;
-
-    i = map_data->map_start_index;
-    while (map_data->map_content[i] && i <= map_data->map_end_index)
-    {
-        if (i == map_data->map_start_index)
-            check_surrounded_by_ones(map_data->map_content[map_data->map_start_index]);
-        else if (i > map_data->map_start_index && i < map_data->map_end_index)
-            check_unsurrounded_zeros(map_data->map_content, i);
-        else if (i == map_data->map_end_index)
-            check_surrounded_by_ones(map_data->map_content[map_data->map_end_index]);
-        i++;
-    }
-}
-
-
-// check jnab
-// 7seb gap between texture and map before looping on map
 int main(int ac, char **av)
 {
     if (ac != 2)
@@ -790,25 +767,17 @@ int main(int ac, char **av)
     map_data = malloc(sizeof(t_map_info));
     check_file_existence_and_extension(av[1]);
     read_and_store_map(av[1], map_data);
-    /* init map struct values */
-    get_texture_first_line(map_data);
-    get_texture_last_line(map_data);
-    get_map_first_line(map_data);
-    get_map_last_line(map_data);
-    get_eof_index(map_data);
-    /* CHECK TEXTURES */
-    check_number_of_texture(map_data->map_content);
-    set_textures_values(map_data->map_content, map_data); // values of direction
-    is_valid_ceilling(map_data);
-    is_valid_floor(map_data);
-    /* END -- CHECK TEXTURES */
+    init_map_line_ranges(map_data);
+    textures_parse(map_data);
     has_gap_between_lines(map_data->map_content, map_data->map_start_index, map_data->map_end_index);
     map_parse(map_data);
-    show_info(map_data);
+    printf("=>sucess<=");
     return (0);
 }
 
-// is_surrounded_by_Walls(map_content, map_data);
+// check jnab
+// 7seb gap between texture and map before looping on map
+
 // PARSE MAP CHARACTERS, PLAYER
 
 /*
@@ -828,3 +797,10 @@ int color_f;
 // valid floor and ceilling
 
 // verify map edges
+
+/*
+texture/npn0.xpm\n  17
+n = 15
+
+texture/npn0.xpm
+*/
