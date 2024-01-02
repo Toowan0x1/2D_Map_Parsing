@@ -51,3 +51,12 @@ F 117,0,35,59
       100001000001
       111111111111
 ```
+
+## Usage
+
+When launching the program, it is necessary to use as argument a map located in the /maps folder
+
+```shell
+./MapParser maps/map.cub
+```
+
