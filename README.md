@@ -24,7 +24,7 @@ This is then followed by a top down reprensentation of the map using the followi
 - **Vertical check** : The vertical check follows the same logic, constant verification that a wall is present before and after a space string. The combination of the vertical and horizontal check will allow to create any type of map, rounded or with islands, while checking that there is no opening, in example a `0` not surrounded by `1`.
 
 ## Example usage
-The program can be run by passing it a .cub file as parameter (examples in [maps](https://github.com/Toowan0x1/cub3d_parsing/tree/main/maps)).
+The program can be run by passing it a .cub file as parameter (examples in [maps](https://github.com/Toowan0x1/cub3d_parsing/tree/master/maps)).
 
 Map used for this example:
 ```
