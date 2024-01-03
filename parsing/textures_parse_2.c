@@ -54,9 +54,9 @@ void    set_textures_values(char **map, t_map_info *map_data)
         {
             char **texture_split = ft_split(map[i], ' ');
             map_data->no_texture = texture_split[1];
-            if (texture_split[2])
+            if (texture_split[2] || !texture_split[1])
             {
-                write(2, "invalid given texture.\n", 23);
+                printf("Invalid given texture NO.\n");
                 exit(1);
             }
             check_textures(map_data->no_texture);
@@ -66,9 +66,9 @@ void    set_textures_values(char **map, t_map_info *map_data)
         {
             char **texture_split = ft_split(map[i], ' ');
             map_data->so_texture = texture_split[1];
-            if (texture_split[2])
+            if (texture_split[2] || !texture_split[1])
             {
-                write(2, "invalid given texture.\n", 23);
+                printf("invalid given texture for SO.\n");
                 exit(1);
             }
             check_textures(map_data->so_texture);
@@ -77,9 +77,9 @@ void    set_textures_values(char **map, t_map_info *map_data)
         {
             char **texture_split = ft_split(map[i], ' ');
             map_data->we_texture = texture_split[1];
-            if (texture_split[2])
+            if (texture_split[2] || !texture_split[1])
             {
-                write(2, "invalid given texture.\n", 23);
+                printf("invalid given texture for WE.\n");
                 exit(1);
             }
             check_textures(map_data->we_texture);
@@ -88,9 +88,9 @@ void    set_textures_values(char **map, t_map_info *map_data)
         {
             char **texture_split = ft_split(map[i], ' ');
             map_data->ea_texture = texture_split[1];
-            if (texture_split[2])
+            if (texture_split[2] || !texture_split[1])
             {
-                write(2, "invalid given texture.\n", 23);
+                printf("invalid given texture for EA.\n");
                 exit(1);
             }
             check_textures(map_data->ea_texture);
@@ -100,9 +100,14 @@ void    set_textures_values(char **map, t_map_info *map_data)
         {
             char **texture_split = ft_split(map[i], ' ');
             map_data->ceiling = texture_split[1];
+            if (!texture_split[1])
+            {
+                printf("Zero given value for Ceiling.\n");
+                exit(1);
+            }
             if (texture_split[2])
             {
-                write(2, "invalid given texture.\n", 23);
+                printf("Invalid given value for Ceilling.\n"); // Extra given value
                 exit(1);
             }
         }
@@ -110,9 +115,14 @@ void    set_textures_values(char **map, t_map_info *map_data)
         {
             char **texture_split = ft_split(map[i], ' ');
             map_data->floor = texture_split[1];
+            if (!texture_split[1])
+            {
+                printf("Zero given value for Floor.\n");
+                exit(1);
+            }
             if (texture_split[2])
             {
-                write(2, "invalid given texture.\n", 23);
+                printf("Invalid given value for Floor.\n"); // Extra given value
                 exit(1);
             }
         }

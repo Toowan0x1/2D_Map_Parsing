@@ -80,11 +80,6 @@ int    is_valid_color_range(char *str, t_map_info *map_data)
         }
         i++;
     }
-    if (res > 255)
-    {
-        write(2, "*** texture number greather than 255 ***\n", 41);
-        exit(1);
-    }
     return (res);
 }
 
@@ -119,14 +114,14 @@ void    is_valid_ceilling(t_map_info *map_data)
         }
         else
         {
-            write(2, "*** texture error ***\n", 22);
+            printf("Invalid given value for Ceilling.\n");
             exit(1);
         }
         i++;
     }
     if (c_commas != 2)
     {
-        printf("invalid ceilling value\n");
+        printf("Invalid given value for Ceilling.\n");
         exit(1);
     }
 }
@@ -162,14 +157,14 @@ void    is_valid_floor(t_map_info *map_data)
         }
         else
         {
-            write(2, "*** texture error ***\n", 22);
+            printf("Invalid given value for Floor.\n");
             exit(1);
         }
         i++;
     }
     if (f_commas != 2)
     {
-        printf("invalid floor value\n");
+        printf("Invalid given value for Floor.\n");
         exit(1);
     }
 }
@@ -203,11 +198,45 @@ void calc_color_value(t_map_info *map_data)
 
 void    textures_parse(t_map_info *map_data)
 {
-    check_number_of_texture(map_data->map_content);
+    check_number_of_texture(map_data->map_content); // change methodology
+    map_data->c_values[0] = -1;
+    map_data->c_values[1] = -1;
+    map_data->c_values[2] = -1;
+    
+    map_data->f_values[0] = -1;
+    map_data->f_values[1] = -1;
+    map_data->f_values[2] = -1;
     set_textures_values(map_data->map_content, map_data); // values of direction
     is_valid_ceilling(map_data);
     is_valid_floor(map_data);
     // function to set the 3 values and then calculate rgb
+
+    
+    //printf("--%d--\n", map_data->c_values[2]);
+
+    if (map_data->c_values[2] == -1)
+    {
+        printf("Invalid given value for Ceilling.\n");
+        exit(1);
+    }
+    if (map_data->f_values[2] == -1)
+    {
+        printf("Invalid given value for Floor.\n");
+        exit(1);
+    }
+
+    if (map_data->c_values[0] > 255 || map_data->c_values[1] > 255 ||
+        map_data->c_values[2] > 255)
+    {
+        write(2, "*** texture number for ceilling greather than 255 ***\n", 41);
+        exit(1);
+    }
+    if (map_data->f_values[0] > 255 || map_data->f_values[1] > 255 ||
+        map_data->f_values[2] > 255)
+    {
+        write(2, "*** texture number for floor greather than 255 ***\n", 41);
+        exit(1);
+    }
 
     calc_color_value(map_data);
 }

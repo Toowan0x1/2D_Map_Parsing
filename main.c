@@ -175,7 +175,7 @@ void    has_gap_between_lines(char **line, int start, int end)
     else if (character == 0)
     {
         printf("There is no character in the map.\n");
-        //exit(1);
+        exit(1);
     }
 }
 
@@ -191,7 +191,7 @@ int main(int ac, char **av)
     read_and_store_map(av[1], map_data);
     init_map_line_ranges(map_data);
     //show_info(map_data);
-    textures_parse(map_data);
+    //textures_parse(map_data);
     //map_parse(map_data);
     //show_info(map_data);
     
@@ -202,6 +202,7 @@ int main(int ac, char **av)
     check_gaps(map_data, map_data->map_end_index + 1, map_data->eof_index + 1);
     // had function dyal has gap chno kadir nsit hhhhh
     has_gap_between_lines(map_data->map_content, map_data->map_start_index, map_data->map_end_index);
+    textures_parse(map_data);
     map_parse(map_data);
     printf(" => parsing sucess <=");
     return (0);
