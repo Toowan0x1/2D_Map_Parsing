@@ -1,6 +1,6 @@
 # cub3D: 2D Map Parsing
 
-<img src="https://raw.githubusercontent.com/Toowan0x1/cub3d_parsing/master/map_screenshot_2.png">
+<!-- <img src="https://raw.githubusercontent.com/Toowan0x1/cub3d_parsing/master/map_screenshot_2.png"> -->
 
 ## About
 ### Map files (.cub)
