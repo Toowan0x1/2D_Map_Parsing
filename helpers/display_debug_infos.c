@@ -27,5 +27,20 @@ void    show_info(t_map_info *map_data)
     // printf("map start at index: %d\n", map_data->map_start_index);
     // printf("map end at index: %d\n", map_data->map_end_index);
     // printf("map eof index: %d\n", map_data->eof_index);
-    printf("\n ==> parsing successful <==\n");
+
+    /* display extracted fc data: */
+    // printf("ceilling values are:\t%d,%d,%d\n", map_data->c_values[0], map_data->c_values[1], map_data->c_values[2]);
+    // printf("ceilling color is:\t%d", map_data->c_color);
+    // printf("\n");
+    // printf("floor values are:\t%d,%d,%d\n", map_data->f_values[0], map_data->f_values[1], map_data->f_values[2]);
+    // printf("floor color is:\t\t%d", map_data->f_color);
+
+    //index 0 to first line texture
+    printf("%d -> %d\n", 0+1, map_data->texture_start_index+1);
+    //last line texture to first line map
+    printf("%d -> %d\n", map_data->texture_end_index+1, map_data->map_start_index+1);
+    // last line map to eof index
+    printf("%d -> %d\n", map_data->map_end_index+1, map_data->eof_index+1);
+    
+    // printf("\n ==> parsing successful <==\n");
 }

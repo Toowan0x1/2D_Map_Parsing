@@ -10,11 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/***********    *************    *************   *************/
-
-            /*    M A P     P A R S I N G     */
-
-/***********    *************    *************   *************/
+/*************************************************************/
+/*															 */
+/*                  M A P    P A R S I N G                   */
+/*															 */
+/*************************************************************/
 
 #include "../parsing.h"
 
@@ -36,7 +36,8 @@ void    check_unsurrounded_zeros(char **line, int i)
         else if (line[i][j] == '0')
         {
             if ((line[i - 1][j] == ' ' || line[i + 1][j] == ' ') ||
-                (j > (int)ft_strlen(line[i - 1]) - 1 || j > (int)ft_strlen(line[i + 1]) - 1))
+                (j > (int)ft_strlen(line[i - 1]) - 1 || j > (int)ft_strlen(line[i + 1]) - 1) ||
+                (line[i][j - 1] == ' ' || line[i][j + 1] == ' '))
             {
                 printf("MAP ERROR: Unsurrounded 0 detected in line %d\n", i + 1);
                 exit(1);

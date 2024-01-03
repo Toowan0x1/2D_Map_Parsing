@@ -27,15 +27,17 @@ typedef struct s_map_info
     int     len_of_line;
 
     char    **map_content;
-    char    *ceiling;
-    char    *floor;
     char    *no_texture;
     char    *so_texture;
     char    *we_texture;
     char    *ea_texture;
+    char    *ceiling;
+    char    *floor;
 
-    int     color_c;
-    int     color_f;
+    int     c_color;
+    int     f_color;
+    int     *c_values;
+    int     *f_values;
 }   t_map_info;
 
 void    init_map_line_ranges(t_map_info *map_data);
@@ -44,4 +46,4 @@ void    textures_parse(t_map_info *map_data);
 void    set_textures_values(char **map, t_map_info *map_data);
 
 void    show_info(t_map_info *map_data);
-void remove_trailing_newline(char *str);
+void    remove_trailing_newline(char *str);
