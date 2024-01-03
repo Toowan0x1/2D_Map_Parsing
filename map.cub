@@ -1,9 +1,9 @@
 
 
-F 0,35,59
+F 0,35,59   
 C 35,59,0
 
-
+F 0,35,59
 NO textures/north.xpm
 SO textures/south.xpm
 WE textures/west.xpm   

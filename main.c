@@ -179,7 +179,7 @@ int main(int ac, char **av)
     //textures_parse(map_data);
     //map_parse(map_data);
     //show_info(map_data);
-    show_info(map_data);
+    //show_info(map_data);
     
     //has_gap_between_lines(map_data->map_content, map_data->map_start_index, map_data->map_end_index);
     check_gaps(map_data, 0, map_data->texture_start_index);
@@ -190,7 +190,7 @@ int main(int ac, char **av)
     has_gap_between_lines(map_data->map_content, map_data->map_start_index, map_data->map_end_index);
     textures_parse(map_data);
     map_parse(map_data);
-    show_info(map_data);
+    //show_info(map_data);
     printf(" => parsing success <=");
     return (0);
 }
@@ -205,6 +205,7 @@ int main(int ac, char **av)
 // display the all errors in stdout before exit(1).
 // PARSE MAP CHARACTERS, PLAYER
 // if we do a space in  map (in left edge)
+// handle setting double textures
 
 // case 1: check if the map is whole blank and have no content.
 // case 2: check if there is no map part2 or no texture.
