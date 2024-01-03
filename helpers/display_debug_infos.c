@@ -18,7 +18,7 @@ void    show_info(t_map_info *map_data)
     int index = map_data->texture_start_index;
     while (index <= map_data->map_end_index)
     {
-        printf("i=%d=%s\n", index, map_data->map_content[index]);
+        printf("i=%d=%s\n", index + 0, map_data->map_content[index]);
         index++;
     }
     printf("\n");

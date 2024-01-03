@@ -210,10 +210,7 @@ void    textures_parse(t_map_info *map_data)
     is_valid_ceilling(map_data);
     is_valid_floor(map_data);
     // function to set the 3 values and then calculate rgb
-
     
-    //printf("--%d--\n", map_data->c_values[2]);
-
     if (map_data->c_values[2] == -1)
     {
         printf("Invalid given value for Ceilling.\n");

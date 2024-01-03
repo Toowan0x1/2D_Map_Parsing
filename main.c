@@ -12,13 +12,14 @@
 
 #include "parsing.h"
 
-void is_file_valid(char *str) {
+void is_file_valid(char *str)
+{
     int fd;
 
     fd = open(str, O_RDONLY);
     if (fd == -1)
     {
-        write(2, "file not found\n", 15);
+        printf("'%s': File not found.\n", str);
         exit (1);
     }
     close(fd);
@@ -38,7 +39,7 @@ void check_file_existence_and_extension(char *file)
         is_file_valid(file);
     else
     {
-        write(2, "wrong file extention\n", 21);
+        printf("'.%s': Wrong file extention.\n", file + index_to_start);
         exit (1);
     }
 }
@@ -88,7 +89,7 @@ void    check_gaps(t_map_info *map_data, int start, int end)
         {
             if (map_data->map_content[start][i] != 0)
             {
-                printf("Error in line %d\n", start+1);
+                printf("Error in line %d\n", start + 1);
                 exit(1);
             }
             i++;
@@ -96,18 +97,6 @@ void    check_gaps(t_map_info *map_data, int start, int end)
         start++;
     }
 }
-
-// int     hhhh(char *line)
-// {
-//     int i;
-    
-//     i = 0;
-//     while (line[i])
-//     {
-//         if (line[i])
-//         i++;
-//     }
-// }
 
 void    check_0_to_end_texture(char **map, int i, int end)
 {
@@ -125,7 +114,7 @@ void    check_0_to_end_texture(char **map, int i, int end)
             i++;
         else if (map[i][0] == 'F' && map[i][1] == ' ')
             i++;
-        else if (map[i][0] == 0)// || map[i][0] == ' ' || map[i][0] == '\t')//&& hhhh(map[i]))
+        else if (map[i][0] == 0)
             i++;
         else
         {
@@ -135,10 +124,7 @@ void    check_0_to_end_texture(char **map, int i, int end)
     }
 }
 
-// OSWE player++
-// if OSWE, inrecement
-// else exit(1)
-// if OSWE >= 1 exit(1)
+// this func name must be changed (according to to code functionality)
 void    has_gap_between_lines(char **line, int start, int end)
 {
     int i;
@@ -160,7 +146,7 @@ void    has_gap_between_lines(char **line, int start, int end)
                 line[start][i] != 'N' && line[start][i] != 'S' &&
                 line[start][i] != 'W' && line[start][i] != 'E')
             {
-                printf("error: unexpected chracter f line %d", start + 1);
+                printf("error: unexpected chracter f line %d", start + 1); /**/
                 exit(1);
             }
             i++;
@@ -169,12 +155,12 @@ void    has_gap_between_lines(char **line, int start, int end)
     }
     if (character > 1)
     {
-        printf("More than one character on the map.\n");
+        printf("More than one character on the map.\n"); /**/
         exit(1);
     }
     else if (character == 0)
     {
-        printf("There is no character in the map.\n");
+        printf("There is no character in the map.\n"); /**/
         exit(1);
     }
 }
@@ -190,21 +176,22 @@ int main(int ac, char **av)
     check_file_existence_and_extension(av[1]);
     read_and_store_map(av[1], map_data);
     init_map_line_ranges(map_data);
-    //show_info(map_data);
     //textures_parse(map_data);
     //map_parse(map_data);
     //show_info(map_data);
+    show_info(map_data);
     
     //has_gap_between_lines(map_data->map_content, map_data->map_start_index, map_data->map_end_index);
     check_gaps(map_data, 0, map_data->texture_start_index);
     check_0_to_end_texture(map_data->map_content, map_data->texture_start_index, map_data->map_start_index);
-    check_gaps(map_data, map_data->texture_end_index, map_data->map_start_index);
+    check_gaps(map_data, map_data->texture_end_index + 1, map_data->map_start_index);
     check_gaps(map_data, map_data->map_end_index + 1, map_data->eof_index + 1);
     // had function dyal has gap chno kadir nsit hhhhh
     has_gap_between_lines(map_data->map_content, map_data->map_start_index, map_data->map_end_index);
     textures_parse(map_data);
     map_parse(map_data);
-    printf(" => parsing sucess <=");
+    show_info(map_data);
+    printf(" => parsing success <=");
     return (0);
 }
 
@@ -213,35 +200,11 @@ int main(int ac, char **av)
 
 //no spaces f map in the left side 
 //7ta nchecker map kamla 3ad nbda nchof wach kayn character tma wla la
-
-// edit on error messages 
+// func to check the left edges, if == ' '||'\t', then printf("extra spaces in line %d") exit(1) [textures]
+// ft_puterror: edit on error messages 
 // display the all errors in stdout before exit(1).
-
+// PARSE MAP CHARACTERS, PLAYER
 // if we do a space in  map (in left edge)
 
 // case 1: check if the map is whole blank and have no content.
 // case 2: check if there is no map part2 or no texture.
-
-/* checklist: */
-// PARSE MAP CHARACTERS, PLAYER
-// check player != 1 then print error and exit
-// also check if there is another character instead of 0,1, and W S N E 
-// check walls each line il fih another character
-/*
-ft_put_error std2
-int	check_chars(char c)
-{
-	if (c != 'W' && c != 'S' && c != 'E' && c != 'N')
-	{
-		return (1);
-	}
-	return (0);
-}
-*/
-
-/*
-texture/npn0.xpm\n  17
-n = 15
-
-texture/npn0.xpm
-*/
