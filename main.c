@@ -141,6 +141,7 @@ int main(int ac, char **av)
     //show_info(map_data);
     
     check_gaps(map_data, 0, map_data->texture_start_index);
+    //check mabin index 0 to tetxure_end
     check_gaps(map_data, map_data->texture_end_index, map_data->map_start_index);
     check_gaps(map_data, map_data->map_end_index + 1, map_data->eof_index + 1);
     
@@ -151,14 +152,13 @@ int main(int ac, char **av)
 // if char == 0 and char+1 == \0 or \n
 // if char[0] == 0   or while (str[i++]) if (char == '0') return(1)
 
+// edit on error messages 
+
 /* checklist: */
-// check jnab && walls
 // PARSE MAP CHARACTERS, PLAYER
 // check player != 1 then print error and exit
 // also check if there is another character instead of 0,1, and W S N E 
 // check walls each line il fih another character
-// check latest and first index of each line if its 1
-// verify map edges
 /*
 ft_put_error std2
 int	check_chars(char c)

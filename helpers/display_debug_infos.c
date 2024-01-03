@@ -36,11 +36,11 @@ void    show_info(t_map_info *map_data)
     // printf("floor color is:\t\t%d", map_data->f_color);
 
     //index 0 to first line texture
-    printf("%d -> %d\n", 0+1, map_data->texture_start_index+1);
-    //last line texture to first line map
-    printf("%d -> %d\n", map_data->texture_end_index+1, map_data->map_start_index+1);
+    // printf("%d -> %d\n", 0+1, map_data->texture_start_index+1);
+    // last line texture to first line map
+    // printf("%d -> %d\n", map_data->texture_end_index+1, map_data->map_start_index+1);
     // last line map to eof index
-    printf("%d -> %d\n", map_data->map_end_index+1, map_data->eof_index+1);
+    // printf("%d -> %d\n", map_data->map_end_index+1, map_data->eof_index+1);
     
     // printf("\n ==> parsing successful <==\n");
 }

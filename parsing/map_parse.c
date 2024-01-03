@@ -45,8 +45,25 @@ void    check_unsurrounded_zeros(char **line, int i)
         }
         j++;
     }
+    /* Check Edges */
+    // check edges: last char
+    if (line[i][ft_strlen(line[i] + 1)] != '1')
+    {
+        printf("last chracter f line %d is not 1\n", i + 1);
+        exit(1);
+    }
+    // check edges: first char
+    j = 0;
+    while (line[i][j] && (line[i][j] == ' ' || line[i][j] == '\t'))
+        j++;
+    if (line[i][j] != '1')
+    {
+        printf("first chracter f line %d is not 1.\n", i + 1);
+        exit(1);
+    }
 }
 
+// check the first and last map's line if it's surounded only by ones 11111111
 void    check_surrounded_by_ones(char *line)
 {
     int i;
@@ -54,7 +71,7 @@ void    check_surrounded_by_ones(char *line)
     i = 0;
     while (line[i])
     {
-        if (line[i] != '1' && line[i] != ' ')
+        if (line[i] != '1' && line[i] != ' ' && line[i] != '\t')
         {
             printf("MAP ERROR: The first or last line is not fully enclosed by walls.\n");
             exit(1);

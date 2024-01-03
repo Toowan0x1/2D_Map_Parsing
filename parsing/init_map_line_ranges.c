@@ -117,21 +117,45 @@ void get_map_first_line(t_map_info *map_data)
     }
 }
 
+// void    get_map_last_line(t_map_info *map_data)
+// {
+//     int i;
+    
+//     i = map_data->map_start_index;
+//     while (map_data->map_content[i])
+//     {
+//         if (!map_data->map_content[i])
+//             break ;
+//         if (map_data->map_content[i][0] == '1' && map_data->map_content[i][ft_strlen(map_data->map_content[i]) - 1] == '1')
+//             map_data->map_end_index = i;
+//         else if (map_data->map_content[i][0] == '1' && !map_data->map_content[i][1])
+//             map_data->map_end_index = i;
+//         //if (kmala2(line[i]))
+//             //map_data->end_index = i;
+//         //else
+//             //map_data->end_index = i - 1;
+//         i++;
+//     }
+// }
+
 void    get_map_last_line(t_map_info *map_data)
 {
-    int i = map_data->map_start_index;
-    while (map_data->map_content[i])
+    int i;
+    char **line;
+    
+    i = map_data->map_start_index;
+    line = map_data->map_content;
+    while (line[i])
     {
-        if (!map_data->map_content[i])
+        if (!line[i])
             break ;
-        if (map_data->map_content[i][0] == '1' && map_data->map_content[i][ft_strlen(map_data->map_content[i]) - 1] == '1')
+        int j = 0;
+        while (line[i][j] && (line[i][j] == ' ' || line[i][j] == '\t'))
+            j++;
+        if (line[i][j] == '1' && line[i][ft_strlen(line[i]) - 1] == '1')
             map_data->map_end_index = i;
-        else if (map_data->map_content[i][0] == '1' && !map_data->map_content[i][1])
+        else if (line[i][j] == '1' && !line[i][j + 1])
             map_data->map_end_index = i;
-        //if (kmala2(line[i]))
-            //map_data->end_index = i;
-        //else
-            //map_data->end_index = i - 1;
         i++;
     }
 }
