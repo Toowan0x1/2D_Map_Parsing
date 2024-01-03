@@ -21,12 +21,12 @@ void    show_info(t_map_info *map_data)
         printf("i=%d=%s\n", index, map_data->map_content[index]);
         index++;
     }
-    // printf("\n");
-    // printf("textures start at index: %d\n", map_data->texture_start_index);
-    // printf("textures end at index: %d\n", map_data->texture_end_index);
-    // printf("map start at index: %d\n", map_data->map_start_index);
-    // printf("map end at index: %d\n", map_data->map_end_index);
-    // printf("map eof index: %d\n", map_data->eof_index);
+    printf("\n");
+    printf("textures start at index: %d\n", map_data->texture_start_index);
+    printf("textures end at index: %d\n", map_data->texture_end_index);
+    printf("map start at index: %d\n", map_data->map_start_index);
+    printf("map end at index: %d\n", map_data->map_end_index);
+    printf("map eof index: %d\n", map_data->eof_index);
 
     /* display extracted fc data: */
     // printf("ceilling values are:\t%d,%d,%d\n", map_data->c_values[0], map_data->c_values[1], map_data->c_values[2]);

@@ -18,20 +18,21 @@
 
 #include "../parsing.h"
 
-int kmala(char *line)
-{
-    int j = 0;
-    if (!line[j])
-        return (0);
-    while (line[j]) {
-        if (line[j] != '1' && line[j] != '0' && line[j] != ' ' && line[j] != '\t') {
-            return 0; // Non-valid character found
-        }
-        j++;
-    }
-
-    return 1; // Valid line
-}
+// int kmala(char *line)
+// {
+//     int j;
+    
+//     j = 0;
+//     if (!line[j])
+//         return (0);
+//     while (line[j])
+//     {
+//         if (line[j] != '1' && line[j] != '0' && line[j] != ' ' && line[j] != '\t')
+//             return 0; // Non-valid character found
+//         j++;
+//     }
+//     return 1; // Valid line
+// }
 
 void    get_eof_index(t_map_info *map_data)
 {
@@ -102,12 +103,32 @@ void    get_texture_last_line(t_map_info *map_data)
     }
 }
 
+int kmala(char *line)
+{
+    int j;
+    
+    j = 0;
+    if (!line[j])
+        return (0);
+    while (line[j] && (line[j] == ' ' || line[j] == '\t'))
+        j++;
+        // if (line[j] != '1' && line[j] != '0' && line[j] != ' ' && line[j] != '\t')
+        //     return 0; // Non-valid character found
+        // j++;
+    if (line[j] == '1')
+    {
+        return 1;
+    }
+    return 0;
+}
+
 void get_map_first_line(t_map_info *map_data)
 {
     int i;
 
     i = 0;
-    while (map_data->map_content[i]) {
+    while (map_data->map_content[i])
+    {
         if (kmala(map_data->map_content[i]))
         {
             map_data->map_start_index = i; // Found the first valid line, return its index
@@ -141,15 +162,16 @@ void get_map_first_line(t_map_info *map_data)
 void    get_map_last_line(t_map_info *map_data)
 {
     int i;
+    int j;
     char **line;
     
     i = map_data->map_start_index;
     line = map_data->map_content;
     while (line[i])
     {
-        if (!line[i])
+        if (!line[i] || (line[i][0] == 0 || line[i][0] == 10))
             break ;
-        int j = 0;
+        j = 0;
         while (line[i][j] && (line[i][j] == ' ' || line[i][j] == '\t'))
             j++;
         if (line[i][j] == '1' && line[i][ft_strlen(line[i]) - 1] == '1')
