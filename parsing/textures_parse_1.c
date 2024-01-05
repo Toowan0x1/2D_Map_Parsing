@@ -18,36 +18,47 @@
 
 #include "../parsing.h"
 
-void    check_number_of_texture(char **map)
+
+//check total texture
+//void
+
+// calc number of texture
+void    check_number_of_texture(char **map, t_map_info *map_data)
 {
     int i;
-    int total_textures;
+    map_data->c_total = 0;
+    map_data->f_total = 0;
+    map_data->no_total = 0;
+    map_data->so_total = 0;
+    map_data->ea_total = 0;
+    map_data->we_total = 0;
     
-    total_textures = 0;
     i = 0;
     while (map[i])
     {
         if (map[i][0] == 'N' && map[i][1] == 'O' && map[i][2] == ' ')
-            total_textures++;
+            map_data->no_total++;
         else if (map[i][0] == 'S' && map[i][1] == 'O' && map[i][2] == ' ')
-            total_textures++;
+            map_data->so_total++;
         else if (map[i][0] == 'W' && map[i][1] == 'E' && map[i][2] == ' ')
-            total_textures++;
+            map_data->we_total++;
         else if (map[i][0] == 'E' && map[i][1] == 'A' && map[i][2] == ' ')
-            total_textures++;
+            map_data->ea_total++;
         else if (map[i][0] == 'C' && map[i][1] == ' ')
-            total_textures++;
+            map_data->c_total++;
         else if (map[i][0] == 'F' && map[i][1] == ' ')
-            total_textures++;
+            map_data->f_total++;
         i++;
     }
-    if (total_textures != 6)
+    if (!(map_data->c_total == 1 && map_data->f_total == 1 && map_data->no_total == 1 &&
+        map_data->so_total == 1 && map_data->ea_total == 1 && map_data->we_total == 1))
     {
-        write(2, "invalid number of textures.\n", 28);
+        printf("[ERROR]: Incorrect number of textures provided. Please ensure that the correct number of textures is specified for each attribute (e.g., 'F', 'C', 'WE', 'NO', 'SO', 'EA').");
         exit(1);
     }
 }
 
+// calc color from char* to int
 //void    is_valid_color_range(char *str, t_map_info *map_data)
 int    is_valid_color_range(char *str, t_map_info *map_data)
 {
@@ -61,7 +72,7 @@ int    is_valid_color_range(char *str, t_map_info *map_data)
     {
         if (str[i] == '-')
         {
-            write(2, "*** invalid texture number ***\n", 31);
+            printf("[ERROR]: Floor and ceiling values must be non-negative and within 0 to 255 range.\n");
             exit(1);
         }
         i++;
@@ -72,11 +83,6 @@ int    is_valid_color_range(char *str, t_map_info *map_data)
         {
             res *= 10;
             res += str[i] - '0';
-        }
-        else
-        {
-            write(2, "*** invalid texture number ***\n", 31);
-            exit(1);
         }
         i++;
     }
@@ -198,7 +204,7 @@ void calc_color_value(t_map_info *map_data)
 
 void    textures_parse(t_map_info *map_data)
 {
-    check_number_of_texture(map_data->map_content); // change methodology
+    check_number_of_texture(map_data->map_content, map_data); // change methodology
     map_data->c_values[0] = -1;
     map_data->c_values[1] = -1;
     map_data->c_values[2] = -1;
@@ -225,17 +231,15 @@ void    textures_parse(t_map_info *map_data)
     if (map_data->c_values[0] > 255 || map_data->c_values[1] > 255 ||
         map_data->c_values[2] > 255)
     {
-        write(2, "*** texture number for ceilling greather than 255 ***\n", 41);
+        printf("[ERROR]: Floor and ceiling values must not exceed 255, and should be within the range of 0 to 255.\n");
         exit(1);
     }
     if (map_data->f_values[0] > 255 || map_data->f_values[1] > 255 ||
         map_data->f_values[2] > 255)
     {
-        write(2, "*** texture number for floor greather than 255 ***\n", 41);
+        printf("[ERROR]: Floor and ceiling values must not exceed 255, and should be within the range of 0 to 255..\n");
         exit(1);
     }
 
     calc_color_value(map_data);
 }
-
-// error: color value out of range 0 -> 255\n

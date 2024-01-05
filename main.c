@@ -19,7 +19,7 @@ void is_file_valid(char *str)
     fd = open(str, O_RDONLY);
     if (fd == -1)
     {
-        printf("'%s': File not found.\n", str);
+        printf("[ERROR]: '%s' File not found.\n", str);
         exit (1);
     }
     close(fd);
@@ -39,7 +39,7 @@ void check_file_existence_and_extension(char *file)
         is_file_valid(file);
     else
     {
-        printf("'.%s': Wrong file extention.\n", file + index_to_start);
+        printf("[ERROR]: '.%s' Wrong file extention.\n", file + index_to_start);
         exit (1);
     }
 }
@@ -89,7 +89,7 @@ void    check_gaps(t_map_info *map_data, int start, int end)
         {
             if (map_data->map_content[start][i] != 0)
             {
-                printf("Error in line %d\n", start + 1);
+                printf("[ERROR]: Unexpected data found in the texture configuration in line %d. The entry '%s' is not recognized.\n", start + 1, map_data->map_content[start]);
                 exit(1);
             }
             i++;
@@ -118,7 +118,7 @@ void    check_0_to_end_texture(char **map, int i, int end)
             i++;
         else
         {
-            printf("something found between 0 and end textures in line %d\n", i+1);
+            printf("[ERROR]: Unexpected data found in the texture configuration in line %d. The entry '%s' is not recognized.\n", i + 1, map[i]);
             exit(1);
         }
     }
@@ -146,7 +146,7 @@ void    has_gap_between_lines(char **line, int start, int end)
                 line[start][i] != 'N' && line[start][i] != 'S' &&
                 line[start][i] != 'W' && line[start][i] != 'E')
             {
-                printf("error: unexpected chracter f line %d", start + 1); /**/
+                printf("[ERROR]: Unexpected chracter '%c' found in the map at line %d index %d.", line[start][i], start + 1, i);
                 exit(1);
             }
             i++;
@@ -155,15 +155,17 @@ void    has_gap_between_lines(char **line, int start, int end)
     }
     if (character > 1)
     {
-        printf("More than one character on the map.\n"); /**/
+        printf("[ERROR]: More than one character (player) detected on the map.\n"); /**/
         exit(1);
     }
     else if (character == 0)
     {
-        printf("There is no character in the map.\n"); /**/
+        printf("[ERROR]: No character (player) found on the map.\n"); /**/
         exit(1);
     }
 }
+
+void    check_number_of_texture(char **map, t_map_info *map_data);
 
 int main(int ac, char **av)
 {
@@ -181,6 +183,8 @@ int main(int ac, char **av)
     //show_info(map_data);
     //show_info(map_data);
     
+
+    //check_number_of_texture(map_data->map_content, map_data); // remove it later
     //has_gap_between_lines(map_data->map_content, map_data->map_start_index, map_data->map_end_index);
     check_gaps(map_data, 0, map_data->texture_start_index);
     check_0_to_end_texture(map_data->map_content, map_data->texture_start_index, map_data->map_start_index);
@@ -198,14 +202,5 @@ int main(int ac, char **av)
 // if char == 0 and char+1 == \0 or \n
 // if char[0] == 0   or while (str[i++]) if (char == '0') return(1)
 
-//no spaces f map in the left side 
-//7ta nchecker map kamla 3ad nbda nchof wach kayn character tma wla la
 // func to check the left edges, if == ' '||'\t', then printf("extra spaces in line %d") exit(1) [textures]
 // ft_puterror: edit on error messages 
-// display the all errors in stdout before exit(1).
-// PARSE MAP CHARACTERS, PLAYER
-// if we do a space in  map (in left edge)
-// handle setting double textures
-
-// case 1: check if the map is whole blank and have no content.
-// case 2: check if there is no map part2 or no texture.

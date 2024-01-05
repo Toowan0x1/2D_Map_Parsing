@@ -16,7 +16,7 @@ void    check_texture_valid(char *texture)
 {
     if (access(texture, F_OK) != 0)
     {
-        printf("File not found.\n"); // write error
+        printf("Error: '%s' File not found.\n", texture); // write error
         exit(1);
     }
     return ;
@@ -25,6 +25,28 @@ void    check_texture_valid(char *texture)
 void    check_xpm_extension(char *texture)
 {
     int i = 0;
+    // function bohdha
+    int flag = 0;
+    if (texture[i] != '.')
+        flag++;
+    while (texture[i])
+    {
+        if (texture[i] == '.')
+        {
+            flag++;
+            break;
+        }
+        i++;
+    }
+    if (texture[++i] != '.')
+        flag++;
+    if (flag != 3)
+    {
+        printf("[ERROR]: Invalid provided texture '%s'.\n", texture);
+        exit(1);
+    }
+    // end hanaya
+    i = 0;
     while (texture[i])
         i++;
     int index_to_start = i - 4;
@@ -33,7 +55,7 @@ void    check_xpm_extension(char *texture)
         //is_valid(texture)
     }
     else {
-        write(2, "wrong texture extension.\n", 26);
+        printf("[ERROR]: '%s' Wrong texture extension.\n", texture);
         exit(1);
     }
 }
@@ -54,9 +76,14 @@ void    set_textures_values(char **map, t_map_info *map_data)
         {
             char **texture_split = ft_split(map[i], ' ');
             map_data->no_texture = texture_split[1];
-            if (texture_split[2] || !texture_split[1])
+            if (!texture_split[1])
             {
-                printf("Invalid given texture NO.\n");
+                printf("[ERROR]: 'NO' attribute is not provided with a value.\n");
+                exit(1);
+            }
+            if (texture_split[2])
+            {
+                printf("[ERROR]: Extra values found in the 'NO' attribute.\n");
                 exit(1);
             }
             check_textures(map_data->no_texture);
@@ -66,9 +93,14 @@ void    set_textures_values(char **map, t_map_info *map_data)
         {
             char **texture_split = ft_split(map[i], ' ');
             map_data->so_texture = texture_split[1];
-            if (texture_split[2] || !texture_split[1])
+            if (!texture_split[1])
             {
-                printf("invalid given texture for SO.\n");
+                printf("[ERROR]: 'SO' attribute is not provided with a value.\n");
+                exit(1);
+            }
+            if (texture_split[2])
+            {
+                printf("[ERROR]: Extra values found in the 'SO' attribute.\n");
                 exit(1);
             }
             check_textures(map_data->so_texture);
@@ -77,9 +109,14 @@ void    set_textures_values(char **map, t_map_info *map_data)
         {
             char **texture_split = ft_split(map[i], ' ');
             map_data->we_texture = texture_split[1];
-            if (texture_split[2] || !texture_split[1])
+            if (!texture_split[1])
             {
-                printf("invalid given texture for WE.\n");
+                printf("[ERROR]: 'WE' attribute is not provided with a value.\n");
+                exit(1);
+            }
+            if (texture_split[2])
+            {
+                printf("[ERROR]: Extra values found in the 'WE' attribute.\n");
                 exit(1);
             }
             check_textures(map_data->we_texture);
@@ -88,9 +125,14 @@ void    set_textures_values(char **map, t_map_info *map_data)
         {
             char **texture_split = ft_split(map[i], ' ');
             map_data->ea_texture = texture_split[1];
-            if (texture_split[2] || !texture_split[1])
+            if (!texture_split[1])
             {
-                printf("invalid given texture for EA.\n");
+                printf("[ERROR]: 'EA' attribute is not provided with a value.\n");
+                exit(1);
+            }
+            if (texture_split[2])
+            {
+                printf("[ERROR]: Extra values found in the 'EA' attribute.\n");
                 exit(1);
             }
             check_textures(map_data->ea_texture);
@@ -102,12 +144,12 @@ void    set_textures_values(char **map, t_map_info *map_data)
             map_data->ceiling = texture_split[1];
             if (!texture_split[1])
             {
-                printf("Zero given value for Ceiling.\n");
+                printf("[ERROR]: 'C' attribute is not provided with a value.\n");
                 exit(1);
             }
             if (texture_split[2])
             {
-                printf("Invalid given value for Ceilling.\n"); // Extra given value
+                printf("[ERROR]: Extra values found in the 'C' attribute.\n");
                 exit(1);
             }
         }
@@ -117,12 +159,12 @@ void    set_textures_values(char **map, t_map_info *map_data)
             map_data->floor = texture_split[1];
             if (!texture_split[1])
             {
-                printf("Zero given value for Floor.\n");
+                printf("[ERROR]: 'F' attribute is not provided with a value.\n");
                 exit(1);
             }
             if (texture_split[2])
             {
-                printf("Invalid given value for Floor.\n"); // Extra given value
+                printf("[ERROR]: Extra values found in the 'F' attribute.\n");
                 exit(1);
             }
         }

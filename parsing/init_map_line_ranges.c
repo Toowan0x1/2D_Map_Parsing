@@ -57,6 +57,8 @@ void    get_texture_first_line(t_map_info *map_data)
     }
 }
 
+void    check_number_of_texture(char **map, t_map_info *map_data);
+
 void    get_texture_last_line(t_map_info *map_data)
 {
     int i;
@@ -64,6 +66,7 @@ void    get_texture_last_line(t_map_info *map_data)
 
     i = 0;
     total_textures = 0;
+    check_number_of_texture(map_data->map_content, map_data);
     while (map_data->map_content[i])
     {
         if (map_data->map_content[i][0] == 'N' && map_data->map_content[i][1] == 'O' && map_data->map_content[i][2] == ' ')
