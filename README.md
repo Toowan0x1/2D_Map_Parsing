@@ -64,10 +64,10 @@ When launching the program, it is necessary to use as argument a map located in 
 
 ## Checklist
 
-The following features are planned for future releases and will be added soon
+The following features are planned for future releases and will be added soon:
 
-- [ ] Handle the scenario of duplicate textures.
+- [x] Handle the scenario of duplicate textures.
 - [ ] Handle the scenario where there are extra spaces or tabs at the left edge of the map.
-- [ ] Display all errors found on stdout before exiting the program.
-- [ ] Check if the map is completely blank and contains no content.
+- [ ] Check if the map is completely blank and contains no content. or only includes spaces and random characters.
 - [ ] Check if thre are both parts of map textures and the map.
+- [ ] 42 Norm
