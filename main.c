@@ -158,7 +158,7 @@ void    has_gap_between_lines(char **line, int start, int end)
     }
     if (character > 1)
     {
-        printf("[ERROR]: More than one character (player) detected on the map.\n"); /**/
+        printf("[ERROR]: More than one character (player) detected on the map.\n");
         exit(1);
     }
     else if (character == 0)
@@ -167,8 +167,6 @@ void    has_gap_between_lines(char **line, int start, int end)
         exit(1);
     }
 }
-
-void    check_number_of_texture(char **map, t_map_info *map_data);
 
 int main(int ac, char **av)
 {
@@ -181,8 +179,6 @@ int main(int ac, char **av)
     check_file_existence_and_extension(av[1]);
     read_and_store_map(av[1], map_data);
     init_map_line_ranges(map_data);
-    show_info(map_data);
-    //check_number_of_texture(map_data->map_content, map_data); // remove it later
     check_gaps(map_data, 0, map_data->texture_start_index);
     check_0_to_end_texture(map_data->map_content, map_data->texture_start_index, map_data->texture_end_index);
     check_gaps(map_data, map_data->texture_end_index + 1, map_data->map_start_index);
@@ -190,9 +186,7 @@ int main(int ac, char **av)
     // had function dyal has gap chno kadir nsit hhhhh
     has_gap_between_lines(map_data->map_content, map_data->map_start_index, map_data->map_end_index);
     textures_parse(map_data);
-    printf("--- test ---");
-    map_parse(map_data); // there is a problem here !!
-    printf("--- test ---");
+    map_parse(map_data);
     printf(" => parsing success <=");
     return (0);
 }

@@ -129,7 +129,7 @@ void    get_map_last_line(t_map_info *map_data)
     line = map_data->map_content;
     while (line[i])
     {
-        if (!line[i])
+        if (!line[i] || (line[i][0] == 0 || line[i][0] == 10))
             break ;
         j = 0;
         while (line[i][j] && (line[i][j] == ' ' || line[i][j] == '\t'))

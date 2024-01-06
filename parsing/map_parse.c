@@ -112,8 +112,5 @@ void    map_parse(t_map_info *map_data)
         else if (i == map_data->map_end_index)
             check_surrounded_by_ones(map_data->map_content[map_data->map_end_index], i);
         i++;
-        //test
-        if (i == map_data->map_end_index - 1)
-            printf("dfdf");
     }
 }
