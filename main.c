@@ -69,7 +69,6 @@ void    read_and_store_map(char *map_name, t_map_info *map_data)
     map_fd = open(map_name, O_RDONLY);;
     while ((line = get_next_line(map_fd)) != NULL)
     {
-        //map_data->map_content[i] = malloc(sizeof(char) * ft_strlen(line) + 1);
         map_data->map_content[i] = ft_strdup(line);
         remove_trailing_newline(map_data->map_content[i]);
         free(line);
@@ -129,8 +128,36 @@ void    check_0_to_end_texture(char **map, int i, int end)
     }
 }
 
-// this func name must be changed (according to to code functionality)
-void    has_gap_between_lines(char **line, int start, int end)
+int    validate_characters(char c, int *character)
+{
+    if (c == 'N' || c == 'S' ||
+        c == 'W' || c == 'E')
+        (*character)++;
+    if (c != '0' && c != '1' && 
+        c != ' ' && c != '\t' &&
+        c != 'N' && c != 'S' &&
+        c != 'W' && c != 'E')
+    {
+        return (0);
+    }
+    return (1);
+}
+
+void    validate_player_chracter_count(int *character)
+{
+    if (*character > 1)
+    {
+        printf("[ERROR]: More than one character (player) detected on the map.\n");
+        exit(1);
+    }
+    else if (*character == 0)
+    {
+        printf("[ERROR]: No character (player) found on the map.\n");
+        exit(1);
+    }
+}
+
+void    start_map_to_end_map(char **line, int start, int end)
 {
     int i;
     int character;
@@ -141,13 +168,7 @@ void    has_gap_between_lines(char **line, int start, int end)
         i = 0;
         while (line[start][i])
         {
-            if (line[start][i] == 'N' || line[start][i] == 'S' ||
-                line[start][i] == 'W' || line[start][i] == 'E')
-                character++;
-            if (line[start][i] != '0' && line[start][i] != '1' && 
-                line[start][i] != ' ' && line[start][i] != '\t' &&
-                line[start][i] != 'N' && line[start][i] != 'S' &&
-                line[start][i] != 'W' && line[start][i] != 'E')
+            if (validate_characters(line[start][i], &character) == 0)
             {
                 printf("[ERROR]: Unexpected chracter '%c' found in the map at line %d index %d.", line[start][i], start + 1, i);
                 exit(1);
@@ -156,16 +177,7 @@ void    has_gap_between_lines(char **line, int start, int end)
         }
         start++;
     }
-    if (character > 1)
-    {
-        printf("[ERROR]: More than one character (player) detected on the map.\n");
-        exit(1);
-    }
-    else if (character == 0)
-    {
-        printf("[ERROR]: No character (player) found on the map.\n");
-        exit(1);
-    }
+    validate_player_chracter_count(&character);
 }
 
 int main(int ac, char **av)
@@ -183,8 +195,7 @@ int main(int ac, char **av)
     check_0_to_end_texture(map_data->map_content, map_data->texture_start_index, map_data->texture_end_index);
     check_gaps(map_data, map_data->texture_end_index + 1, map_data->map_start_index);
     check_gaps(map_data, map_data->map_end_index + 1, map_data->eof_index + 1);
-    // had function dyal has gap chno kadir nsit hhhhh
-    has_gap_between_lines(map_data->map_content, map_data->map_start_index, map_data->map_end_index);
+    start_map_to_end_map(map_data->map_content, map_data->map_start_index, map_data->map_end_index);
     textures_parse(map_data);
     map_parse(map_data);
     printf(" => parsing success <=");
