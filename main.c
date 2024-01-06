@@ -88,12 +88,8 @@ void    check_gaps(t_map_info *map_data, int start, int end)
         {
             if (map_data->map_content[start][i] != 0)
             {
-                // if out map
-                    //printf("[ERROR1]: Unexpected data found in the texture configuration at line %d. The entry '%s' is not recognized.\n", start + 1, map_data->map_content[start]);
-                //if checking within map then:
                 printf("[ERROR]: Unexpected chracter '%c' found in the map at line %d index %d.\n", map_data->map_content[start][i], start+1, i);
                 //if == 0
-                    // unsournded wall msg
                 exit(1);
             }
             i++;
@@ -102,7 +98,7 @@ void    check_gaps(t_map_info *map_data, int start, int end)
     }
 }
 
-void    check_0_to_end_texture(char **map, int i, int end)
+void    start_texture_to_end_texture(char **map, int i, int end)
 {
     while (map[i] && i < end)
     {
@@ -184,20 +180,25 @@ int main(int ac, char **av)
 {
     if (ac != 2)
         return (1);
+    /* init struct data (a single func to manage initialization of data ) */
     t_map_info *map_data;
     map_data = malloc(sizeof(t_map_info));
     map_data->c_values = (int *)malloc(sizeof(int) * 3);
     map_data->f_values = (int *)malloc(sizeof(int) * 3);
+    /* -- -- -- -- -- -- -- -- -- */
     check_file_existence_and_extension(av[1]);
     read_and_store_map(av[1], map_data);
     init_map_line_ranges(map_data);
+    /* check gaps funcs (make these 5 funcs in one func) */
     check_gaps(map_data, 0, map_data->texture_start_index);
-    check_0_to_end_texture(map_data->map_content, map_data->texture_start_index, map_data->texture_end_index);
+    start_texture_to_end_texture(map_data->map_content, map_data->texture_start_index, map_data->texture_end_index);
     check_gaps(map_data, map_data->texture_end_index + 1, map_data->map_start_index);
     check_gaps(map_data, map_data->map_end_index + 1, map_data->eof_index + 1);
     start_map_to_end_map(map_data->map_content, map_data->map_start_index, map_data->map_end_index);
+    /* -- -- -- -- -- -- -- -- -- */
     textures_parse(map_data);
     map_parse(map_data);
+    //show_infos(map_data);
     printf(" => parsing success <=");
     return (0);
 }
