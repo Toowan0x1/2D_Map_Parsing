@@ -89,7 +89,12 @@ void    check_gaps(t_map_info *map_data, int start, int end)
         {
             if (map_data->map_content[start][i] != 0)
             {
-                printf("[ERROR]: Unexpected data found in the texture configuration in line %d. The entry '%s' is not recognized.\n", start + 1, map_data->map_content[start]);
+                // if out map
+                    //printf("[ERROR1]: Unexpected data found in the texture configuration at line %d. The entry '%s' is not recognized.\n", start + 1, map_data->map_content[start]);
+                //if checking within map then:
+                printf("[ERROR]: Unexpected chracter '%c' found in the map at line %d index %d.\n", map_data->map_content[start][i], start+1, i);
+                //if == 0
+                    // unsournded wall msg
                 exit(1);
             }
             i++;
@@ -118,7 +123,7 @@ void    check_0_to_end_texture(char **map, int i, int end)
             i++;
         else
         {
-            printf("[ERROR]: Unexpected data found in the texture configuration in line %d. The entry '%s' is not recognized.\n", i + 1, map[i]);
+            printf("[ERROR]: Unexpected data found in the texture configuration at line %d. The entry '%s' is not recognized.\n", i + 1, map[i]);
             exit(1);
         }
     }
@@ -138,9 +143,7 @@ void    has_gap_between_lines(char **line, int start, int end)
         {
             if (line[start][i] == 'N' || line[start][i] == 'S' ||
                 line[start][i] == 'W' || line[start][i] == 'E')
-            {
                 character++;
-            }
             if (line[start][i] != '0' && line[start][i] != '1' && 
                 line[start][i] != ' ' && line[start][i] != '\t' &&
                 line[start][i] != 'N' && line[start][i] != 'S' &&
@@ -160,7 +163,7 @@ void    has_gap_between_lines(char **line, int start, int end)
     }
     else if (character == 0)
     {
-        printf("[ERROR]: No character (player) found on the map.\n"); /**/
+        printf("[ERROR]: No character (player) found on the map.\n");
         exit(1);
     }
 }
@@ -178,29 +181,18 @@ int main(int ac, char **av)
     check_file_existence_and_extension(av[1]);
     read_and_store_map(av[1], map_data);
     init_map_line_ranges(map_data);
-    //textures_parse(map_data);
-    //map_parse(map_data);
-    //show_info(map_data);
-    //show_info(map_data);
-    
-
+    show_info(map_data);
     //check_number_of_texture(map_data->map_content, map_data); // remove it later
-    //has_gap_between_lines(map_data->map_content, map_data->map_start_index, map_data->map_end_index);
     check_gaps(map_data, 0, map_data->texture_start_index);
-    check_0_to_end_texture(map_data->map_content, map_data->texture_start_index, map_data->map_start_index);
+    check_0_to_end_texture(map_data->map_content, map_data->texture_start_index, map_data->texture_end_index);
     check_gaps(map_data, map_data->texture_end_index + 1, map_data->map_start_index);
     check_gaps(map_data, map_data->map_end_index + 1, map_data->eof_index + 1);
     // had function dyal has gap chno kadir nsit hhhhh
     has_gap_between_lines(map_data->map_content, map_data->map_start_index, map_data->map_end_index);
     textures_parse(map_data);
-    map_parse(map_data);
-    //show_info(map_data);
+    printf("--- test ---");
+    map_parse(map_data); // there is a problem here !!
+    printf("--- test ---");
     printf(" => parsing success <=");
     return (0);
 }
-
-// if char == 0 and char+1 == \0 or \n
-// if char[0] == 0   or while (str[i++]) if (char == '0') return(1)
-
-// func to check the left edges, if == ' '||'\t', then printf("extra spaces in line %d") exit(1) [textures]
-// ft_puterror: edit on error messages 

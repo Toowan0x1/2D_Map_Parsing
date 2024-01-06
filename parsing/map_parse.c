@@ -10,26 +10,21 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/*************************************************************/
-/*															 */
-/*                  M A P    P A R S I N G                   */
-/*															 */
-/*************************************************************/
-
 #include "../parsing.h"
 
-// check the first and last map's line if it's surounded only by ones 11111111
 void    check_surrounded_by_ones(char *line, int n)
 {
     int i;
     
-    i = 0;
-    if ((line[(int)ft_strlen(line) - 1]) != '1') // line - 1  vs line 
+    if ((line[(int)ft_strlen(line) - 1]) != '1')
     {
-        printf("extra spaces in line %d\n", n + 1); // if space
-        // if 0  printf("left edge not surrounded by wall in line %d\n", n);
+        if ((line[(int)ft_strlen(line) - 1]) == '0')
+            printf("[ERROR]: The line %d is not fully enclosed by walls.\n", n + 1);
+        else if ((line[(int)ft_strlen(line) - 1]) == ' ')
+            printf("[ERROR]: Found extra spaces in line %d\n", n + 1);
         exit(1);
     }
+    i = 0;
     while (line[i])
     {
         if (line[i] != '1' && line[i] != ' ' && line[i] != '\t')
@@ -41,28 +36,33 @@ void    check_surrounded_by_ones(char *line, int n)
     }
 }
 
-void    check_unsurrounded_zeros(char **line, int i)
+void    check_unsurrounded_edges(char **line, int i)
 {
     int j;
 
-    /* Check Edges */
-    // check edges: last char
+    j = 0;
     if (line[i][ft_strlen(line[i] + 1)] != '1')
     {
-        printf("extra spaces in line %d\n", i+1); // if space
-        // if 0  printf("left edge not surrounded by wall in line %d\n", n);
+        if (line[i][ft_strlen(line[i] + 1)] == '0')
+            printf("[ERROR]: The line %d is not fully enclosed by walls.\n", i + 1);
+        else if (line[i][ft_strlen(line[i] + 1)] == ' ')
+            printf("[ERROR]: Found extra spaces in line %d.\n", i + 1);
         exit(1);
     }
-    // check edges: first char
     j = 0;
     while (line[i][j] && (line[i][j] == ' ' || line[i][j] == '\t'))
         j++;
     if (line[i][j] != '1')
     {
-        printf("first chracter f line %d is not 1.\n", i + 1);
+        printf("[ERROR]: Unsurrounded 0 detected in line %d\n", i + 1);
         exit(1);
     }
-    //end 
+}
+
+void    check_unsurrounded_zeros(char **line, int i)
+{
+    int j;
+
     j = 0;
     while (line[i][j])
     {
@@ -89,20 +89,31 @@ void    check_unsurrounded_zeros(char **line, int i)
     }
 }
 
+// void    check_unsurrounded_zeros(char **line, int i)
+// {
+//     check_unsurrounded_edges(line, i);
+//     check_surrounded_zeros(line, i);
+// }
+
 void    map_parse(t_map_info *map_data)
 {
     int i;
 
     i = map_data->map_start_index;
-    //printf("start index %d\n", i);
     while (map_data->map_content[i] && i <= map_data->map_end_index)
     {
         if (i == map_data->map_start_index)
             check_surrounded_by_ones(map_data->map_content[map_data->map_start_index], i);
         else if (i > map_data->map_start_index && i < map_data->map_end_index)
+        {
+            check_unsurrounded_edges(map_data->map_content, i);
             check_unsurrounded_zeros(map_data->map_content, i);
+        }
         else if (i == map_data->map_end_index)
             check_surrounded_by_ones(map_data->map_content[map_data->map_end_index], i);
         i++;
+        //test
+        if (i == map_data->map_end_index - 1)
+            printf("dfdf");
     }
 }

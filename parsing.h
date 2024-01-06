@@ -23,13 +23,11 @@ typedef struct s_map_info
     int     map_start_index;
     int     map_end_index;
     int     eof_index;
-    int     num_of_lines; //
-    int     len_of_line; //
-
+    int     num_of_lines;
+    int     len_of_line;
     char    **map_content;
-    
-    char    *ceiling; // _value
-    char    *floor; //_value
+    char    *ceiling;
+    char    *floor;
     char    *no_texture;
     char    *so_texture;
     char    *we_texture;
@@ -38,15 +36,12 @@ typedef struct s_map_info
     int     *f_values;
     int     c_color;
     int     f_color;
-
-    /**/
     int     f_total;
     int     c_total;
     int     no_total;
     int     so_total;
     int     we_total;
     int     ea_total;
-    /**/
 }   t_map_info;
 
 void    init_map_line_ranges(t_map_info *map_data);

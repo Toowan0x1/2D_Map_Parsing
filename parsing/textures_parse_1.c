@@ -10,30 +10,35 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/*************************************************************/
-/*															 */
-/*             T E X T U R E     P A R S I N G               */
-/*															 */
-/*************************************************************/
-
 #include "../parsing.h"
 
-
-//check total texture
-//void
-
-// calc number of texture
-void    check_number_of_texture(char **map, t_map_info *map_data)
+void    init_textures_value(t_map_info *map_data)
 {
-    int i;
     map_data->c_total = 0;
     map_data->f_total = 0;
     map_data->no_total = 0;
     map_data->so_total = 0;
     map_data->ea_total = 0;
     map_data->we_total = 0;
+}
+
+void    validate_texture_count(t_map_info *map_data)
+{
+    if (!(map_data->c_total == 1 && map_data->f_total == 1 && map_data->no_total == 1 &&
+        map_data->so_total == 1 && map_data->ea_total == 1 && map_data->we_total == 1))
+    {
+        printf("[ERROR]: Incorrect number of textures provided.");
+        printf("Please ensure that the correct number of textures is specified for each attribute (e.g., 'F', 'C', 'WE', 'NO', 'SO', 'EA').\n");
+        exit(1);
+    }
+}
+
+void    count_total_textures(char **map, t_map_info *map_data)
+{
+    int i;
     
     i = 0;
+    init_textures_value(map_data);    
     while (map[i])
     {
         if (map[i][0] == 'N' && map[i][1] == 'O' && map[i][2] == ' ')
@@ -50,24 +55,16 @@ void    check_number_of_texture(char **map, t_map_info *map_data)
             map_data->f_total++;
         i++;
     }
-    if (!(map_data->c_total == 1 && map_data->f_total == 1 && map_data->no_total == 1 &&
-        map_data->so_total == 1 && map_data->ea_total == 1 && map_data->we_total == 1))
-    {
-        printf("[ERROR]: Incorrect number of textures provided. Please ensure that the correct number of textures is specified for each attribute (e.g., 'F', 'C', 'WE', 'NO', 'SO', 'EA').");
-        exit(1);
-    }
+    validate_texture_count(map_data);
 }
 
-// calc color from char* to int
-//void    is_valid_color_range(char *str, t_map_info *map_data)
-int    is_valid_color_range(char *str, t_map_info *map_data)
+int     grab_numeric_value(char *str)
 {
     int i;
     int res;
 
     res = 0;
     i = 0;
-    (void)map_data;
     if (str[i] == '-' || str[i] == '+')
     {
         if (str[i] == '-')
@@ -107,7 +104,7 @@ void    is_valid_ceilling(t_map_info *map_data)
         {
             if (c_flag == 0)
             {
-                map_data->c_values[c_index] = is_valid_color_range(&map_data->ceiling[i], map_data);
+                map_data->c_values[c_index] = grab_numeric_value(&map_data->ceiling[i]);
                 c_flag = 1;
                 c_index++;
             }
@@ -150,7 +147,7 @@ void    is_valid_floor(t_map_info *map_data)
         {
             if (f_flag == 0)
             {
-                map_data->f_values[f_index] = is_valid_color_range(&map_data->floor[i], map_data);
+                map_data->f_values[f_index] = grab_numeric_value(&map_data->floor[i]);
                 f_flag = 1;
                 f_index++;
             }
@@ -175,9 +172,7 @@ void    is_valid_floor(t_map_info *map_data)
     }
 }
 
-
-// calc_rgb_color
-void calc_color_value(t_map_info *map_data)
+void calc_cf_color_value(t_map_info *map_data)
 {
     int sum_c;
     int sum_f;
@@ -201,33 +196,28 @@ void calc_color_value(t_map_info *map_data)
     map_data->f_color = sum_f;
 }
 
-
-void    textures_parse(t_map_info *map_data)
+void    init_cf_values(t_map_info *map_data)
 {
-    check_number_of_texture(map_data->map_content, map_data); // change methodology
     map_data->c_values[0] = -1;
     map_data->c_values[1] = -1;
     map_data->c_values[2] = -1;
-    
     map_data->f_values[0] = -1;
     map_data->f_values[1] = -1;
     map_data->f_values[2] = -1;
-    set_textures_values(map_data->map_content, map_data); // values of direction
-    is_valid_ceilling(map_data);
-    is_valid_floor(map_data);
-    // function to set the 3 values and then calculate rgb
-    
+}
+
+void    validate_cf_errors(t_map_info *map_data)
+{
     if (map_data->c_values[2] == -1)
     {
-        printf("Invalid given value for Ceilling.\n");
+        printf("[ERROR]: Invalid provided value for Ceilling.\n");
         exit(1);
     }
     if (map_data->f_values[2] == -1)
     {
-        printf("Invalid given value for Floor.\n");
+        printf("[ERROR]: Invalid provided value for Floor.\n");
         exit(1);
     }
-
     if (map_data->c_values[0] > 255 || map_data->c_values[1] > 255 ||
         map_data->c_values[2] > 255)
     {
@@ -240,6 +230,15 @@ void    textures_parse(t_map_info *map_data)
         printf("[ERROR]: Floor and ceiling values must not exceed 255, and should be within the range of 0 to 255..\n");
         exit(1);
     }
+}
 
-    calc_color_value(map_data);
+void    textures_parse(t_map_info *map_data)
+{
+    count_total_textures(map_data->map_content, map_data);
+    init_cf_values(map_data);
+    set_textures_values(map_data->map_content, map_data);
+    is_valid_ceilling(map_data);
+    is_valid_floor(map_data);
+    validate_cf_errors(map_data);
+    calc_cf_color_value(map_data);
 }
