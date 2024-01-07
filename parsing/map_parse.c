@@ -59,6 +59,12 @@ void    check_unsurrounded_edges(char **line, int i)
     }
 }
 
+static void    print_error(int i)
+{
+    printf("[ERROR]: Unsurrounded 0 detected in line %d\n", i + 1);
+    exit(1);
+}
+
 void    check_unsurrounded_zeros(char **line, int i)
 {
     int j;
@@ -70,30 +76,18 @@ void    check_unsurrounded_zeros(char **line, int i)
         {
             if ((line[i - 1][j] == '0' || line[i + 1][j] == '0') &&
                 !(j > (int)ft_strlen(line[i+1])) && !(j > (int)ft_strlen(line[i-1])))
-            {
-                printf("[ERROR]: Unsurrounded 0 detected in line %d\n", i + 1);
-                exit(1);
-            }
+                print_error(i);
         }
         else if (line[i][j] == '0')
         {
             if ((line[i - 1][j] == ' ' || line[i + 1][j] == ' ') ||
                 (j > (int)ft_strlen(line[i - 1]) - 1 || j > (int)ft_strlen(line[i + 1]) - 1) ||
                 (line[i][j - 1] == ' ' || line[i][j + 1] == ' '))
-            {
-                printf("ERROR: Unsurrounded 0 detected in line %d\n", i + 1);
-                exit(1);
-            }
+                print_error(i);
         }
         j++;
     }
 }
-
-// void    check_unsurrounded_zeros(char **line, int i)
-// {
-//     check_unsurrounded_edges(line, i);
-//     check_surrounded_zeros(line, i);
-// }
 
 void    map_parse(t_map_info *map_data)
 {

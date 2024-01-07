@@ -21,6 +21,22 @@ void    get_eof_index(t_map_info *map_data)
         map_data->eof_index = i++;
 }
 
+void    count_textures(char *line, int *total_textures)
+{
+    if (line[0] == 'N' && line[1] == 'O' && line[2] == ' ')
+        (*total_textures)++;
+    else if (line[0] == 'S' && line[1] == 'O' && line[2] == ' ')
+        (*total_textures)++;
+    else if (line[0] == 'W' && line[1] == 'E' && line[2] == ' ')
+        (*total_textures)++;
+    else if (line[0] == 'E' && line[1] == 'A' && line[2] == ' ')
+        (*total_textures)++;
+    else if (line[0] == 'C' && line[1] == ' ')
+        (*total_textures)++;
+    else if (line[0] == 'F' && line[1] == ' ')
+        (*total_textures)++;
+}
+
 void    get_texture_first_line(t_map_info *map_data)
 {
     int i;
@@ -30,18 +46,7 @@ void    get_texture_first_line(t_map_info *map_data)
     total_textures = 0;
     while (map_data->map_content[i])
     {
-        if (map_data->map_content[i][0] == 'N' && map_data->map_content[i][1] == 'O' && map_data->map_content[i][2] == ' ')
-            total_textures++;
-        else if (map_data->map_content[i][0] == 'S' && map_data->map_content[i][1] == 'O' && map_data->map_content[i][2] == ' ')
-            total_textures++;
-        else if (map_data->map_content[i][0] == 'W' && map_data->map_content[i][1] == 'E' && map_data->map_content[i][2] == ' ')
-            total_textures++;
-        else if (map_data->map_content[i][0] == 'E' && map_data->map_content[i][1] == 'A' && map_data->map_content[i][2] == ' ')
-            total_textures++;
-        else if (map_data->map_content[i][0] == 'C' && map_data->map_content[i][1] == ' ')
-            total_textures++;
-        else if (map_data->map_content[i][0] == 'F' && map_data->map_content[i][1] == ' ')
-            total_textures++;
+        count_textures(map_data->map_content[i], &total_textures);
         if (total_textures > 0)
         {
             map_data->texture_start_index = i;
@@ -51,21 +56,19 @@ void    get_texture_first_line(t_map_info *map_data)
     }
 }
 
-void    count_total_textures(char **map, t_map_info *map_data);
-
-void    until_last_textures(char *lolo, int *total_textures)
+void    until_last_textures(char *line, int *total_textures)
 {
-    if (lolo[0] == 'N' && lolo[1] == 'O' && lolo[2] == ' ')
+    if (line[0] == 'N' && line[1] == 'O' && line[2] == ' ')
         (*total_textures)++;
-    else if (lolo[0] == 'S' && lolo[1] == 'O' && lolo[2] == ' ')
+    else if (line[0] == 'S' && line[1] == 'O' && line[2] == ' ')
         (*total_textures)++;
-    else if (lolo[0] == 'W' && lolo[1] == 'E' && lolo[2] == ' ')
+    else if (line[0] == 'W' && line[1] == 'E' && line[2] == ' ')
         (*total_textures)++;
-    else if (lolo[0] == 'E' && lolo[1] == 'A' && lolo[2] == ' ')
+    else if (line[0] == 'E' && line[1] == 'A' && line[2] == ' ')
         (*total_textures)++;
-    else if (lolo[0] == 'C' && lolo[1] == ' ')
+    else if (line[0] == 'C' && line[1] == ' ')
         (*total_textures)++;
-    else if (lolo[0] == 'F' && lolo[1] == ' ')
+    else if (line[0] == 'F' && line[1] == ' ')
         (*total_textures)++;
 }
 
@@ -89,7 +92,7 @@ void    get_texture_last_line(t_map_info *map_data)
     }
 }
 
-int kmala(char *line)
+int is_line(char *line)
 {
     int j;
     
@@ -110,7 +113,7 @@ void get_map_first_line(t_map_info *map_data)
     i = 0;
     while (map_data->map_content[i])
     {
-        if (kmala(map_data->map_content[i]))
+        if (is_line(map_data->map_content[i]))
         {
             map_data->map_start_index = i;
             return ;

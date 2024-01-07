@@ -18,9 +18,5 @@ void remove_trailing_newline(char *str)
 
     len = ft_strlen(str);
     if (len > 0 && str[len - 1] == '\n')
-    {
-        // Replace newline with null terminator:
         str[len - 1] = '\0';
-        // if str[len] exist then free str[len] character.
-    }
 }

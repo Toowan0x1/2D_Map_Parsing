@@ -86,6 +86,50 @@ int     grab_numeric_value(char *str)
     return (res);
 }
 
+/*
+void    is_valid_floor(t_map_info *map_data)
+{
+    int i;
+    int f_commas;
+    int f_flag;
+    int f_index;
+
+    f_commas = 0;
+    f_flag = 0;
+    f_index = 0;
+    i = 0;
+    while (map_data->floor[i])
+    {
+        if ((map_data->floor[i] >= '0' && map_data->floor[i] <= '9') ||
+            (map_data->floor[i] == '+' || map_data->floor[i] == '-'))
+        {
+            if (f_flag == 0)
+            {
+                map_data->f_values[f_index] = grab_numeric_value(&map_data->floor[i]);
+                f_flag = 1;
+                f_index++;
+            }
+        }
+        else if (map_data->floor[i] == ',')
+        {
+            f_commas++;
+            if (f_flag == 1)
+                f_flag = 0;
+        }
+        else
+        {
+            printf("[ERROR]: Invalid provided value for Floor.\n");
+            exit(1);
+        }
+        i++;
+    }
+    if (f_commas != 2)
+    {
+        printf("[ERROR]: Invalid provided value for Floor.\n");
+        exit(1);
+    }
+}
+
 void    is_valid_ceilling(t_map_info *map_data)
 {
     int c_commas;
@@ -117,59 +161,73 @@ void    is_valid_ceilling(t_map_info *map_data)
         }
         else
         {
-            printf("Invalid given value for Ceilling.\n");
+            printf("[ERROR]: Invalid provided value for Ceilling.\n");
             exit(1);
         }
         i++;
     }
     if (c_commas != 2)
     {
-        printf("Invalid given value for Ceilling.\n");
+        printf("[ERROR]: Invalid provided value for Ceilling.\n");
         exit(1);
     }
 }
+*/
 
-void    is_valid_floor(t_map_info *map_data)
+void    parse_individual_values(t_map_info *map_data, char attr, char *val)
 {
-    int f_commas;
-    int f_flag;
-    int i;
-    int f_index;
-
-    f_commas = 0;
-    f_flag = 0;
-    i = 0;
-    f_index = 0;
-    while (map_data->floor[i])
+    if (map_data->attr_flag == 0)
     {
-        if ((map_data->floor[i] >= '0' && map_data->floor[i] <= '9') ||
-            (map_data->floor[i] == '+' || map_data->floor[i] == '-'))
-        {
-            if (f_flag == 0)
-            {
-                map_data->f_values[f_index] = grab_numeric_value(&map_data->floor[i]);
-                f_flag = 1;
-                f_index++;
-            }
-        }
-        else if (map_data->floor[i] == ',')
-        {
-            f_commas++;
-            if (f_flag == 1)
-                f_flag = 0;
-        }
+        if (attr == 'f')
+            map_data->f_values[map_data->attr_index] = grab_numeric_value(val);
+        else if (attr == 'c')
+            map_data->c_values[map_data->attr_index] = grab_numeric_value(val);
+        map_data->attr_flag = 1;
+        map_data->attr_index++;
+    }
+}
+
+void    track_commas_and_disable_flag(t_map_info *map_data)
+{
+    map_data->attr_commas++;
+    if (map_data->attr_flag == 1)
+        map_data->attr_flag = 0;
+}
+
+static void    print_error(char attr)
+{
+    if (attr == 'f')
+        printf("[ERROR]: Invalid provided value for Floor.\n");
+    else if (attr == 'c')
+        printf("[ERROR]: Invalid provided value for Ceilling.\n");
+    exit(1);
+}
+
+void    is_valid_cf_attribute(t_map_info *map_data, char attr)
+{
+    int     i;
+    char    *val;
+
+    map_data->attr_commas = 0;
+    map_data->attr_flag = 0;
+    map_data->attr_index = 0;
+    i = 0;
+    if (attr == 'f')
+        val = map_data->floor;
+    else if (attr == 'c')
+        val = map_data->ceiling;
+    while (val[i])
+    {
+        if ((val[i] >= '0' && val[i] <= '9') || (val[i] == '+' || val[i] == '-'))
+            parse_individual_values(map_data, attr, &val[i]);
+        else if (val[i] == ',')
+            track_commas_and_disable_flag(map_data);
         else
-        {
-            printf("Invalid given value for Floor.\n");
-            exit(1);
-        }
+            print_error(attr);
         i++;
     }
-    if (f_commas != 2)
-    {
-        printf("Invalid given value for Floor.\n");
-        exit(1);
-    }
+    if (map_data->attr_commas != 2)
+        print_error(attr);
 }
 
 void calc_cf_color_value(t_map_info *map_data)
@@ -198,6 +256,8 @@ void calc_cf_color_value(t_map_info *map_data)
 
 void    init_cf_values(t_map_info *map_data)
 {
+    map_data->c_values = (int *)malloc(sizeof(int) * 3);
+    map_data->f_values = (int *)malloc(sizeof(int) * 3);
     map_data->c_values[0] = -1;
     map_data->c_values[1] = -1;
     map_data->c_values[2] = -1;
@@ -237,8 +297,10 @@ void    textures_parse(t_map_info *map_data)
     count_total_textures(map_data->map_content, map_data);
     init_cf_values(map_data);
     set_textures_values(map_data->map_content, map_data);
-    is_valid_ceilling(map_data);
-    is_valid_floor(map_data);
+    //is_valid_ceilling(map_data);
+    //is_valid_floor(map_data);
+    is_valid_cf_attribute(map_data, 'c');
+    is_valid_cf_attribute(map_data, 'f');
     validate_cf_errors(map_data);
     calc_cf_color_value(map_data);
 }

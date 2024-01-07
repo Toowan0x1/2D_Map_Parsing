@@ -12,6 +12,10 @@
 
 #include "../parsing.h"
 
+//void      cf_data + calculation
+//void      textures
+//void      map
+
 void    show_info(t_map_info *map_data)
 {
     printf("\n");
@@ -29,6 +33,8 @@ void    show_info(t_map_info *map_data)
     printf("map eof index: %d\n", map_data->eof_index);
 
     /* display extracted fc data: */
+    
+    // printf("\n\n");
     // printf("ceilling values are:\t%d,%d,%d\n", map_data->c_values[0], map_data->c_values[1], map_data->c_values[2]);
     // printf("ceilling color is:\t%d", map_data->c_color);
     // printf("\n");

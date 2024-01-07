@@ -42,6 +42,10 @@ typedef struct s_map_info
     int     so_total;
     int     we_total;
     int     ea_total;
+    int     attr_commas;
+    int     attr_flag;
+    int     attr_index;
+
 }   t_map_info;
 
 void    init_map_line_ranges(t_map_info *map_data);
@@ -49,5 +53,12 @@ void    map_parse(t_map_info *map_data);
 void    textures_parse(t_map_info *map_data);
 void    set_textures_values(char **map, t_map_info *map_data);
 
+
+void sections_gaps_analysis(t_map_info *map_data);
+
+
+
 void    show_info(t_map_info *map_data);
 void    remove_trailing_newline(char *str);
+
+void    count_total_textures(char **map, t_map_info *map_data);
