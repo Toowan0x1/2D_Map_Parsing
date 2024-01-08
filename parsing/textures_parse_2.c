@@ -61,7 +61,6 @@ void	check_xpm_extension(char *texture)
 	index_to_start = i - 4;
 	if (ft_strcmp(texture + index_to_start, ".xpm") == 0)
 	{
-		(void);
 		//is_valid(texture)
 	}
 	else
@@ -81,7 +80,7 @@ void	no(t_map_info *map_data, char **map, int i)
 {
 	char	**texture_split;
 
-	texture_xpm_extesion = ft_split(map[i], ' ');
+	texture_split = ft_split(map[i], ' ');
 	map_data->no_texture = texture_split[1];
 	if (!texture_split[1])
 	{
@@ -101,7 +100,7 @@ void	so(t_map_info *map_data, char **map, int i)
 {
 	char	**texture_split;
 
-	texture_xpm_extesion = ft_split(map[i], ' ');
+	texture_split = ft_split(map[i], ' ');
 	map_data->so_texture = texture_split[1];
 	if (!texture_split[1])
 	{
