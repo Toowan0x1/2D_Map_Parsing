@@ -1,0 +1,37 @@
+---------------------------------
+ -   parse_00
+---------------------------------
+set_textures_values
+c
+check_xpm_extension
+examine_texture_format
+check_texture_valid
+---------------------------------
+- parse_01
+---------------------------------
+no
+so
+we
+ea
+f
+---------------------------------
+- parse_02
+---------------------------------
+is_valid_cf_attribute
+grab_numeric_value
+track_commas_and_disable_flag
+parse_individual_values
+print_error
+---------------------------------
+- parse_03
+---------------------------------
+validate_texture_count
+init_textures_value
+count_total_textures
+---------------------------------
+- parse_04
+---------------------------------
+validate_cf_errors
+calc_cf_color_value
+init_cf_values
+---------------------------------

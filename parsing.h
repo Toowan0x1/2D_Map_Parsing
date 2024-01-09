@@ -57,6 +57,30 @@ void    set_textures_values(char **map, t_map_info *map_data);
 void sections_gaps_analysis(t_map_info *map_data);
 
 
+/**/
+void	textures_parse(t_map_info *map_data);
+void	validate_cf_errors(t_map_info *map_data);
+void	calc_cf_color_value(t_map_info *map_data);
+void	init_cf_values(t_map_info *map_data);
+void	set_textures_values(char **map, t_map_info *map_data);
+void	check_xpm_extension(char *texture);
+void	check_texture_valid(char *texture);
+void	c(t_map_info *map_data, char **map, int i);
+void	f(t_map_info *map_data, char **map, int i);
+void	no(t_map_info *map_data, char **map, int i);
+void	so(t_map_info *map_data, char **map, int i);
+void	we(t_map_info *map_data, char **map, int i);
+void	ea(t_map_info *map_data, char **map, int i);
+void	is_valid_cf_attribute(t_map_info *map_data, char attr);
+
+/**/
+void	init_map_line_ranges(t_map_info *map_data);
+
+void	get_eof_index(t_map_info *map_data);
+void	count_textures(char *line, int *total_textures);
+void	until_last_textures(char *line, int *total_textures);
+int     is_line(char *line);
+/**/
 
 void    show_info(t_map_info *map_data);
 void    remove_trailing_newline(char *str);
