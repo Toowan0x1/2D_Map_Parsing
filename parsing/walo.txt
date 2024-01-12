@@ -1,11 +1,3 @@
-check_gaps
-start_texture_to_end_texture
-validate_characters
-validate_player_chracter_count
-start_map_to_end_map
-sections_gaps_analysis
-
-
 get_eof_index
 count_textures
 get_texture_first_line
